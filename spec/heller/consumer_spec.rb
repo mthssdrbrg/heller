@@ -60,7 +60,7 @@ module Heller
 			let(:offset) { 0 }
 
 			it 'should return an array' do
-				consumer.should_receive(:fetch).with(kind_of(Kafka::Api::FetchRequest)).and_return(java.util.ArrayList.new)
+				consumer.should_receive(:fetch).with(kind_of(Kafka::Api::FetchRequest)).and_return(Heller::ArrayList.new)
 
 				fetched = consumer.consume(topic, partition, offset)
 
@@ -106,7 +106,7 @@ module Heller
 			end
 
 			it 'should return a hash of topics and messages' do
-				consumer.should_receive(:multifetch).with(kind_of(java.util.ArrayList)).and_return(multi_fetch_response)
+				consumer.should_receive(:multifetch).with(kind_of(Heller::ArrayList)).and_return(multi_fetch_response)
 
 				fetch_hash = consumer.multi_fetch(topics_hash)
 

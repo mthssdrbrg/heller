@@ -1,8 +1,8 @@
 module Heller
 	class Consumer < Kafka::Consumer::SimpleConsumer
 				
-		LATEST_OFFSET = -1
-		EARLIEST_OFFSET = -2
+		LATEST_OFFSET = -1.freeze
+		EARLIEST_OFFSET = -2.freeze
 
 		MAX_FETCH_SIZE = 1000000.freeze
 

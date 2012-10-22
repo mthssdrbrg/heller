@@ -10,12 +10,12 @@ Gem::Specification.new do |s|
   s.email       = ['mathias.soederberg@gmail.com']
   s.homepage    = 'http://github.com/mthssdrbrg/heller'
   s.summary     = %q{JRuby wrapper for Kafka}
-  s.description = %q{Attempts to make Kafka's Java API to fit a bit better with Ruby}
+  s.description = %q{Attempts to make Kafka's Java API fit a bit better with Ruby}
 
   s.rubyforge_project = 'heller'
   
   s.add_dependency 'kafka-jars', '~> 0.7.2.1'
 
-  s.files         = Dir['lib/*']
+  s.files         = Dir['lib/**/*']
   s.require_paths = %w(lib)
 end

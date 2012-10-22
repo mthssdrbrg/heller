@@ -90,9 +90,6 @@ module Heller
 			end
 
 			let(:multi_fetch_response) { mock('MultiFetchResponse') }
-			let(:response) do
-
-			end
 			let(:expected_hash) do
 				{
 					'0' => [],

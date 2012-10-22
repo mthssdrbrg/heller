@@ -45,7 +45,7 @@ module Heller
 			response_array = topics.zip(response.to_a)
 
 			response_array.inject({}) do |response_hash, (topic, messages)| 
-				response_hash[topic] = messages 
+				response_hash[topic] = messages.to_a
 				response_hash
 			end
 		end

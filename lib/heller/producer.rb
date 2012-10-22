@@ -16,7 +16,7 @@ module Heller
 
 		def wrap_messages(messages)
 			converted = messages.map do |m| 
-				Kafka::Message::Message.new(m.respond_to?(:to_java_bytes) ? m.to_java_bytes : m) 
+				Kafka::Message::Message.new(m) 
 			end
 
 			Kafka::Message::ByteBufferMessageSet.new(ArrayList.new(converted))

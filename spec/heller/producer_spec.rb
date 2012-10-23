@@ -29,7 +29,7 @@ module Heller
 		describe '#wrap_messages' do
 
 			let(:producer) { Producer.new('localhost', 9092) }
-			let(:messages) { ['Test 1', 'Test 2', 'Test 3'] }
+			let(:messages) { ['Test 1', 'Test 2', 'Test 3'].map { |m| m.to_java_bytes } }
 
 			it 'should wrap an array of messages in a ByteBufferMessageSet' do
 				wrapped = producer.wrap_messages(messages)
@@ -42,7 +42,7 @@ module Heller
 		describe '#produce' do
 
 			let(:producer) { Producer.new('localhost', 9092) }
-			let(:messages) { ['Test 1', 'Test 2', 'Test 3'] }
+			let(:messages) { ['Test 1', 'Test 2', 'Test 3'].map { |m| m.to_java_bytes } }
 			let(:topic) { '0' }
 			let(:partition) { 0 }
 

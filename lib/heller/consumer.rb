@@ -42,11 +42,17 @@ module Heller
 		end
 
 		def parse_multi_fetch_response(topics, response)
-			response_array = topics.zip(response.to_a)
+			if response.respond_to?(:to_a)
+				response_array = topics.zip(response.to_a)
 
-			response_array.inject({}) do |response_hash, (topic, messages)| 
-				response_hash[topic] = messages.to_a
-				response_hash
+				response_array.inject({}) do |response_hash, (topic, messages)| 
+					response_hash[topic] = messages.to_a
+					response_hash
+				end
+			else
+				puts 'response does not respond to #to_a'
+				puts "response is #{response.inspect}"
+				puts "topics were: #{topics.inspect}"
 			end
 		end
 	end

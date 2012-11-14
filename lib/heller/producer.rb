@@ -1,36 +1,23 @@
 module Heller
-	class Producer < Kafka::Producer::SyncProducer
+	class Producer < Kafka::Producer::Producer
 
 		attr_reader :configuration
 
-		def initialize(host, port, options = {})
+		def initialize(zk_connect, options = {})
 			options.merge!({
-				'host' => host,
-				'port' => port.to_s	
+				'zk.connect' => zk_connect
 			})
 
-			@configuration = Kafka::Producer::SyncProducerConfig.new(hash_to_properties(options))
-
-			super(@configuration)
+			@configuration = Kafka::Producer::ProducerConfig.new(hash_to_properties(options))
+			super @configuration
 		end
 
-		def wrap_messages(messages)
-			converted = messages.map do |m| 
-				Kafka::Message::Message.new(m) 
+		def produce(topic_mappings)
+			producer_data = topic_mappings.map do |topic, messages|
+				Kafka::Producer::ProducerData.new(topic, messages)
 			end
 
-			Kafka::Message::ByteBufferMessageSet.new(ArrayList.new(converted))
-		end
-
-		def produce(topic, messages, partition = :random)
-			message_set = wrap_messages(messages)
-
-			case partition
-			when :random
-				send(topic, message_set)
-			when Integer
-				send(topic, partition, message_set)
-			end
+			send(producer_data)
 		end
 
 		protected

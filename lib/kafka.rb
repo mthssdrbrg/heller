@@ -21,7 +21,12 @@ module Kafka
 	end
 
 	module Producer
+		java_import 'kafka.producer.ProducerConfig'
 		java_import 'kafka.producer.SyncProducerConfig'
+
+		java_import 'kafka.javaapi.producer.ProducerData'
+
 		java_import 'kafka.javaapi.producer.SyncProducer'
+		java_import 'kafka.javaapi.producer.Producer'
 	end
 end

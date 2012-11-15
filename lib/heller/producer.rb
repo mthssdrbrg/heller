@@ -13,8 +13,12 @@ module Heller
 		end
 
 		def produce(topic_mappings)
-			producer_data = topic_mappings.map do |topic, messages|
-				Kafka::Producer::ProducerData.new(topic, messages)
+			producer_data = topic_mappings.map do |topic, hash|
+				if hash[:key]
+					Kafka::Producer::ProducerData.new(topic, hash[:key], hash[:messages])
+				else
+					Kafka::Producer::ProducerData.new(topic, hash[:messages])
+				end
 			end
 
 			send(producer_data)

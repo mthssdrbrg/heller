@@ -4,7 +4,7 @@ $: << File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'heller'
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.platform    = 'java'
   s.authors     = ['Mathias Söderberg']
   s.email       = ['mathias.soederberg@gmail.com']

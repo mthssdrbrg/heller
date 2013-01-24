@@ -5,8 +5,14 @@ module Heller
 	describe Consumer do
 
 		let(:consumer) { Consumer.new('localhost', 9092, 1000, 1024, 'client_id') }
+		let(:fake_response) { mock(Kafka::Api::FetchResponse) }
 
-		context 'offset methods', :pending => '#fetch_request and #consume' do
+		before do
+			fake_response.stub(:message_set).and_return(Array.new)
+			consumer.stub(:fetch).and_return(fake_response)
+		end
+
+		context 'offset methods', :pending => 'OffsetRequest' do
 
 			let(:offsets) { [0, 1, 2, 3, 4, 5] }
 
@@ -33,87 +39,59 @@ module Heller
 			end
 		end
 
-		describe '#fetch_request' do
-
-			let(:topic) { '0' }
-			let(:partition) { 0 }
-			let(:offset) { 0 }
-			let(:max_size) { 1024000 }
-
-			it 'should create a Kafka::Api::FetchRequest' do
-				fetch_request = consumer.fetch_request(topic, partition, offset, max_size)
-
-				fetch_request.should be_kind_of(Kafka::Api::FetchRequest)
-				fetch_request.topic.should eq(topic)
-				fetch_request.partition.should eq(partition)
-				fetch_request.offset.should eq(offset)
-				fetch_request.max_size.should eq(max_size)
-			end
-		end
-
 		describe '#consume' do
 
 			let(:topic) { '0' }
 			let(:partition) { 0 }
 			let(:offset) { 0 }
 
-			it 'should return an array' do
-				consumer.should_receive(:fetch).with(kind_of(Kafka::Api::FetchRequest)).and_return(Heller::ArrayList.new)
-
+			it 'should return an empty array' do
 				fetched = consumer.consume(topic, partition, offset)
-
-				fetched.should be_kind_of(Array)
 				fetched.should be_empty
 			end
-
 		end
 
-		describe '#multi_fetch', :pending => 'removed from Kafka API' do
+		describe '#multi_consume' do
 
-			let(:topics_hash) do 
-				{
-					'0' => {
-						:partition => 0,
-						:offset => 0
-					},
-					'1' => {
-						:partition => 0,
-						:offset => 0
-					},
-					'2' => {
-						:partition => 0,
-						:offset => 0
+			context 'given a hash of topic to partition and offset mappings' do
+
+				let(:topics_hash) do 
+					{
+						'0' => {
+							:partition => 0,
+							:offset => 0
+						},
+						'1' => {
+							:partition => 0,
+							:offset => 0
+						}
 					}
-				}
-			end
-
-			let(:multi_fetch_response) { mock('MultiFetchResponse') }
-			let(:expected_hash) do
-				{
-					'0' => [],
-					'1' => [],
-					'2' => []
-				}
-			end
-
-			before do
-				multi_fetch_response.stub(:to_a).and_return([[], [], []])
-			end
-
-			it 'should return a hash of topics and messages' do
-				consumer.should_receive(:multifetch).with(kind_of(Heller::ArrayList)).and_return(multi_fetch_response)
-
-				fetch_hash = consumer.multi_fetch(topics_hash)
-
-				fetch_hash.should be_kind_of(Hash)
-				fetch_hash.keys.should eq(topics_hash.keys)
-
-				fetch_hash.values.each do |value|
-					value.should be_kind_of(Array)
 				end
 
-				fetch_hash.should eq(expected_hash)
+				before(:each) do
+					fake_response.stub(:data).and_return do
+						topics_hash.inject({}) do |memo, (topic, options)|
+							topic_partition = Kafka::Common::TopicAndPartition.new(topic, options[:partition])
+
+							memo[topic_partition] = []
+							memo
+						end
+					end
+				end
+
+				it 'returns a topic <-> message_set hash' do
+					response = consumer.multi_consume(topics_hash)
+
+					response.length.should eq(topics_hash.length)
+
+					response['0'].should have_key(0)
+					response['0'][0].should be_empty
+
+					response['1'].should have_key(0)
+					response['1'][0].should be_empty
+				end
 			end
 		end
+
 	end
 end

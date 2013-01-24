@@ -5,7 +5,8 @@ require 'kafka-jars'
 
 module Kafka
 	module Api
-		java_import 'kafka.javaapi.FetchRequest'
+		java_import 'kafka.api.FetchRequest'
+		java_import 'kafka.api.FetchRequestBuilder'
 		java_import 'kafka.javaapi.FetchResponse'
 	end
 

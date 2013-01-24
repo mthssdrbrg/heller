@@ -4,7 +4,7 @@ $: << File.expand_path('../lib', __FILE__)
 
 Gem::Specification.new do |s|
   s.name        = 'heller'
-  s.version     = '0.0.3'
+  s.version     = '0.1.0'
   s.platform    = 'java'
   s.authors     = ['Mathias Söderberg']
   s.email       = ['mathias.soederberg@gmail.com']
@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = 'heller'
   
-  s.add_dependency 'kafka-jars', '~> 0.7.2.2'
+  s.add_dependency 'kafka-jars', '~> 0.8.0.pre0'
 
   s.files         = Dir['lib/**/*']
   s.require_paths = %w(lib)

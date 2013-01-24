@@ -4,17 +4,17 @@ module Heller
 
 	describe Consumer do
 
-		let(:consumer) { Consumer.new('localhost', 9092, 10000, 1024000) }
+		let(:consumer) { Consumer.new('localhost', 9092, 1000, 1024, 'client_id') }
 
-		context 'offset methods' do
+		context 'offset methods', :pending => '#fetch_request and #consume' do
+
+			let(:offsets) { [0, 1, 2, 3, 4, 5] }
 
 			before do
 				consumer.stub(:get_offsets_before).and_return(offsets)
 			end
 
 			describe '#earliest_offset' do
-
-				let(:offsets) { [0, 1, 2, 3, 4, 5] }
 
 				it 'should return earliest offset available' do
 					offset = consumer.earliest_offset('0', 0)
@@ -25,12 +25,10 @@ module Heller
 
 			describe '#latest_offset' do
 
-				let(:offsets) { [5, 4, 3, 2, 1] }
-
 				it 'should return latest offset available' do
 					offset = consumer.latest_offset('0', 0)
 
-					offset.should eq(offsets.first)				
+					offset.should eq(offsets.last)				
 				end
 			end
 		end
@@ -70,7 +68,7 @@ module Heller
 
 		end
 
-		describe '#multi_fetch' do
+		describe '#multi_fetch', :pending => 'removed from Kafka API' do
 
 			let(:topics_hash) do 
 				{

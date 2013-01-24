@@ -14,7 +14,8 @@ module Heller
 			single_offset(topic, partition, EARLIEST_OFFSET)
 		end
 
-		def fetch_request(topic, partition, offset, max_size)
+		# correlation_id, client_id, replica_id, max_wait, min_bytes
+		def fetch_request(correlation_id, client_id, replica_id, max_wait, min_bytes, request_info)
 			Kafka::Api::FetchRequest.new(topic, partition, offset, max_size)
 		end
 
@@ -54,6 +55,16 @@ module Heller
 				puts "response is #{response.inspect}"
 				puts "topics were: #{topics.inspect}"
 			end
+		end
+
+		private
+
+		def partition_fetch_info(offset, fetch_size = MAX_FETCH_SIZE)
+			PartitionFetchInfo.new(offset, fetch_size)
+		end
+
+		def topic_and_partition(topic, partition = 0)
+			TopicAndPartition.new(topic, partition)
 		end
 	end
 end

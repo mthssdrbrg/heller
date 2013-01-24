@@ -4,6 +4,8 @@ module Heller
 
 	describe Producer do
 
+		let(:producer) { Producer.new('localhost:2181') }
+
 		describe '#new' do
 
 			it 'should create a configuration from required arguments' do
@@ -11,7 +13,7 @@ module Heller
 					producer = Producer.new('localhost:2181')
 
 					producer.configuration.should be_instance_of(Kafka::Producer::ProducerConfig)
-					producer.configuration.zk_connect.should eq('localhost:2181')
+					producer.configuration.broker_list.should eq('localhost:2181')
 				}.to_not raise_error
 			end
 
@@ -25,23 +27,56 @@ module Heller
 			end
 		end
 
-		describe '#produce' do
+		describe '#single' do
 
-			let(:producer) { Producer.new('localhost:2181') }
-			let(:topics_hash) do 
-				{
-					'0' => ['Test 1', 'Test 2', 'Test 3']
-				}
+			it 'sends message' do
+				producer.should_receive(:send) do |keyed_message|
+					keyed_message.should be_instance_of(Kafka::Producer::KeyedMessage)
+					keyed_message.topic.should eq('1')
+					keyed_message.message.should eq('Test message')
+					keyed_message.key.should be_nil
+				end
+
+				producer.single('1', 'Test message')
 			end
+		end
 
-			it 'should send messages to given topic' do
-				producer.should_receive(:send).with(kind_of(Array)).and_return(nil)
+		describe '#multiple' do
 
-				expect {
-					producer.produce(topics_hash)
-				}.to_not raise_error
+			it 'batches messages' do
+				producer.should_receive(:send) do |keyed_messages|
+					keyed_messages.each { |k| k.should be_instance_of(Kafka::Producer::KeyedMessage) }
+
+					first_message = keyed_messages.first
+					last_message = keyed_messages.last
+
+					first_message.topic.should eq('1')
+					first_message.message.should eq('Test message')
+					first_message.key.should be_nil
+
+					last_message.topic.should eq('2')
+					last_message.message.should eq('Second message')
+					last_message.key.should eq(1)
+				end
+
+				producer.multiple(['1', 'Test message'], ['2', 'Second message', 1])
+			end			
+		end
+
+		describe '#multiple_to' do
+
+			it 'batches messages going to same topic' do
+				producer.should_receive(:send) do |keyed_messages|
+					keyed_messages.each do |k| 
+						k.should be_instance_of(Kafka::Producer::KeyedMessage) 
+						k.key.should be_nil
+						k.topic.should eq('test-topic')
+						k.message.should be_kind_of(String)
+					end
+				end
+
+				producer.multiple_to('test-topic', ['Test message', 'Second message'])				
 			end
-
 		end
 	end
 end

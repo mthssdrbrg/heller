@@ -5,9 +5,12 @@ require 'kafka-jars'
 
 module Kafka
 	module Api
-		java_import 'kafka.api.FetchRequest'
-		java_import 'kafka.api.MultiFetchRequest'
-		java_import 'kafka.api.MultiFetchResponse'
+		java_import 'kafka.javaapi.FetchRequest'
+		java_import 'kafka.javaapi.FetchResponse'
+	end
+
+	module Common
+		java_import 'kafka.common.TopicAndPartition'
 	end
 
 	module Consumer
@@ -23,10 +26,7 @@ module Kafka
 	module Producer
 		java_import 'kafka.producer.ProducerConfig'
 		java_import 'kafka.producer.SyncProducerConfig'
-
-		java_import 'kafka.javaapi.producer.ProducerData'
-
-		java_import 'kafka.javaapi.producer.SyncProducer'
+		java_import 'kafka.producer.KeyedMessage'
 		java_import 'kafka.javaapi.producer.Producer'
 	end
 end

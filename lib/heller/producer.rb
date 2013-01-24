@@ -3,25 +3,34 @@ module Heller
 
 		attr_reader :configuration
 
-		def initialize(zk_connect, options = {})
-			options.merge!({
-				'zk.connect' => zk_connect
-			})
+		def initialize(broker_list, options = {})
+			options = ({
+				'broker.list' => broker_list,
+				'producer.type' => 'sync'
+			}).merge(options)
 
 			@configuration = Kafka::Producer::ProducerConfig.new(hash_to_properties(options))
-			super @configuration
+			super(@configuration)
 		end
 
-		def produce(topic_mappings)
-			producer_data = topic_mappings.map do |topic, hash|
-				if hash[:key]
-					Kafka::Producer::ProducerData.new(topic, hash[:key], hash[:messages])
-				else
-					Kafka::Producer::ProducerData.new(topic, hash[:messages])
-				end
+		def single(topic, message, key = nil)
+			send(Kafka::Producer::KeyedMessage.new(topic, key, message))
+		end
+
+		def multiple(*messages)
+			wrapped_messages = messages.map do |topic, message, key|
+				Kafka::Producer::KeyedMessage.new(topic, key, message)
 			end
 
-			send(producer_data)
+			send(wrapped_messages)
+		end
+
+		def multiple_to(topic, messages)
+			wrapped_messages = messages.map do |message|
+				Kafka::Producer::KeyedMessage.new(topic, nil, message)
+			end
+
+			send(wrapped_messages)
 		end
 
 		protected

@@ -31,7 +31,7 @@ module Heller
 				end
 			end
 
-			context 'multiple messages to multiple topics and partitions', :pending => true do
+			context '#multiple', :pending => true do
 			end
 
 			describe '#multiple_to' do

@@ -14,26 +14,30 @@ module Heller
 		end
 
 		def single(topic, message, key = nil)
-			send(Kafka::Producer::KeyedMessage.new(topic, key, message))
+			self.send(wrap_message(topic, key, message))
 		end
 
 		def multiple(*messages)
 			wrapped_messages = messages.map do |topic, message, key|
-				Kafka::Producer::KeyedMessage.new(topic, key, message)
+				wrap_message(topic, key, message)
 			end
 
-			send(wrapped_messages)
+			self.send(wrapped_messages)
 		end
 
 		def multiple_to(topic, messages)
 			wrapped_messages = messages.map do |message|
-				Kafka::Producer::KeyedMessage.new(topic, nil, message)
+				wrap_message(topic, nil, message)
 			end
 
-			send(wrapped_messages)
+			self.send(wrapped_messages)
 		end
 
 		protected
+
+		def wrap_message(topic, key, message)
+			Kafka::Producer::KeyedMessage.new(topic, key, message)
+		end
 
 		def hash_to_properties(options)
 			properties = java.util.Properties.new

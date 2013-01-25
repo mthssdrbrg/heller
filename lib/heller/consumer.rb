@@ -18,7 +18,7 @@ module Heller
 			fetch_request = build_fetch_request(request_hash)
 			fetch_response = self.fetch(fetch_request)
 
-			fetch_response.message_set(topic, partition).iterator
+			fetch_response.message_set(topic, partition).iterator.to_a
 		end
 
 		def multi_consume(request_hash)

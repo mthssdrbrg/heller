@@ -7,15 +7,20 @@ module Kafka
 	module Api
 		java_import 'kafka.api.FetchRequest'
 		java_import 'kafka.api.FetchRequestBuilder'
-		java_import 'kafka.javaapi.FetchResponse'
+		java_import 'kafka.api.FetchResponse'
 	end
 
 	module Common
 		java_import 'kafka.common.TopicAndPartition'
 	end
 
+	module Serializer
+		java_import 'kafka.serializer.StringEncoder'
+		java_import 'kafka.serializer.StringDecoder'
+	end
+
 	module Consumer
-		java_import 'kafka.javaapi.consumer.SimpleConsumer'
+		java_import 'kafka.consumer.SimpleConsumer'
 	end
 
 	module Message

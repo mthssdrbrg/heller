@@ -7,4 +7,5 @@ module Heller
 end
 
 require 'heller/consumer'
+require 'heller/topic_consumer'
 require 'heller/producer'

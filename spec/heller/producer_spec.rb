@@ -4,22 +4,22 @@ module Heller
 
 	describe Producer do
 
-		let(:producer) { Producer.new('localhost:2181') }
+		let(:producer) { Producer.new('localhost:9092') }
 
 		describe '#new' do
 
 			it 'should create a configuration from required arguments' do
 				expect {
-					producer = Producer.new('localhost:2181')
+					producer = Producer.new('localhost:9092')
 
 					producer.configuration.should be_instance_of(Kafka::Producer::ProducerConfig)
-					producer.configuration.broker_list.should eq('localhost:2181')
+					producer.configuration.broker_list.should eq('localhost:9092')
 				}.to_not raise_error
 			end
 
 			it 'should include optional options if any given' do
 				expect {
-					producer = Producer.new('localhost:2181', 'serializer.class' => 'kafka.serializer.StringEncoder')
+					producer = Producer.new('localhost:9092', 'serializer.class' => 'kafka.serializer.StringEncoder')
 
 					producer.configuration.should be_instance_of(Kafka::Producer::ProducerConfig)
 					producer.configuration.serializer_class.should eq('kafka.serializer.StringEncoder')

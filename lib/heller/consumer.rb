@@ -11,7 +11,7 @@ module Heller
 				topic => [{
 					:partition => partition,
 					:offset => offset,
-					:fetch_size => MAX_FETCH_SIZE
+					:fetch_size => fetch_size
 				}]
 			}
 

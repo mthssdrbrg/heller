@@ -6,10 +6,30 @@ module Heller
 
 		let(:consumer) { Consumer.new('localhost', 9092, 1000, 1024, 'client_id') }
 		let(:fake_response) { mock(Kafka::Api::FetchResponse) }
+		let(:fake_message_set) { mock(Kafka::Message::ByteBufferMessageSet) }
+
+		class FakeIterator
+
+			def initialize(topics)
+				@topics_and_partitions = topics.inject([]) do |memo, topic|
+					memo << Kafka::Common::TopicAndPartition.new(topic, 0)
+					memo
+				end
+			end
+
+			def has_next?
+				@topics_and_partitions.any?
+			end
+
+			def next
+				@topics_and_partitions.shift
+			end
+		end
 
 		before do
-			fake_response.stub(:message_set).and_return(Array.new)
+			fake_response.stub(:message_set).and_return(fake_message_set)
 			consumer.stub(:fetch).and_return(fake_response)
+			fake_message_set.stub(:iterator).and_return([])
 		end
 
 		context 'offset methods', :pending => 'OffsetRequest' do
@@ -57,26 +77,19 @@ module Heller
 
 				let(:topics_hash) do 
 					{
-						'0' => {
+						'0' => [{
 							:partition => 0,
 							:offset => 0
-						},
-						'1' => {
+						}],
+						'1' => [{
 							:partition => 0,
 							:offset => 0
-						}
+						}]
 					}
 				end
 
 				before(:each) do
-					fake_response.stub(:data).and_return do
-						topics_hash.inject({}) do |memo, (topic, options)|
-							topic_partition = Kafka::Common::TopicAndPartition.new(topic, options[:partition])
-
-							memo[topic_partition] = []
-							memo
-						end
-					end
+					fake_response.stub_chain(:data, :keys, :iterator).and_return(FakeIterator.new(topics_hash.keys))
 				end
 
 				it 'returns a topic <-> message_set hash' do

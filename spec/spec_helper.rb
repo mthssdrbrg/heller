@@ -1,3 +1,3 @@
-$: << File.expand_path('../../lib', __FILE__)
+# encoding: utf-8
 
 require 'heller'

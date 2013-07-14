@@ -1,32 +1,42 @@
 # encoding: utf-8
-
-require 'java'
 require 'kafka-jars'
 
 module Kafka
-	module Api
-		java_import 'kafka.api.FetchRequest'
-		java_import 'kafka.api.MultiFetchRequest'
-		java_import 'kafka.api.MultiFetchResponse'
-	end
+  module Api
+    java_import 'kafka.javaapi.FetchRequest'
+    java_import 'kafka.javaapi.FetchResponse'
+    java_import 'kafka.javaapi.OffsetRequest'
+    java_import 'kafka.javaapi.OffsetResponse'
+    java_import 'kafka.javaapi.PartitionMetadata'
+    java_import 'kafka.javaapi.TopicMetadata'
+    java_import 'kafka.javaapi.TopicMetadataRequest'
+    java_import 'kafka.javaapi.TopicMetadataResponse'
+  end
 
-	module Consumer
-		java_import 'kafka.javaapi.consumer.SimpleConsumer'
-	end
+  module Common
+    java_import 'kafka.common.TopicAndPartition'
+  end
 
-	module Message
-		java_import 'kafka.message.Message'
-		java_import 'kafka.javaapi.message.MessageSet'
-		java_import 'kafka.javaapi.message.ByteBufferMessageSet'
-	end
+  module Serializer
+    java_import 'kafka.serializer.StringEncoder'
+    java_import 'kafka.serializer.StringDecoder'
+  end
 
-	module Producer
-		java_import 'kafka.producer.ProducerConfig'
-		java_import 'kafka.producer.SyncProducerConfig'
+  module Consumer
+    java_import 'kafka.javaapi.consumer.SimpleConsumer'
+    java_import 'kafka.javaapi.consumer.ConsumerConnector'
+  end
 
-		java_import 'kafka.javaapi.producer.ProducerData'
+  module Message
+    java_import 'kafka.message.Message'
+    java_import 'kafka.javaapi.message.MessageSet'
+    java_import 'kafka.javaapi.message.ByteBufferMessageSet'
+  end
 
-		java_import 'kafka.javaapi.producer.SyncProducer'
-		java_import 'kafka.javaapi.producer.Producer'
-	end
+  module Producer
+    java_import 'kafka.javaapi.producer.Producer'
+    java_import 'kafka.producer.ProducerConfig'
+    java_import 'kafka.producer.SyncProducerConfig'
+    java_import 'kafka.producer.KeyedMessage'
+  end
 end

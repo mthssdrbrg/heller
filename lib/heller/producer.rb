@@ -1,39 +1,21 @@
+# encoding: utf-8
+
 module Heller
-	class Producer < Kafka::Producer::Producer
+  class Producer
+    def initialize(broker_list, options = {})
+      @options = options.merge(brokers: broker_list)
+      @producer = create_producer(@options)
+    end
 
-		attr_reader :configuration
+    def push(messages)
+      @producer.send(ArrayList.new(Array(messages)))
+    end
 
-		def initialize(zk_connect, options = {})
-			options.merge!({
-				'zk.connect' => zk_connect
-			})
+    private
 
-			@configuration = Kafka::Producer::ProducerConfig.new(hash_to_properties(options))
-			super @configuration
-		end
-
-		def produce(topic_mappings)
-			producer_data = topic_mappings.map do |topic, hash|
-				if hash[:key]
-					Kafka::Producer::ProducerData.new(topic, hash[:key], hash[:messages])
-				else
-					Kafka::Producer::ProducerData.new(topic, hash[:messages])
-				end
-			end
-
-			send(producer_data)
-		end
-
-		protected
-
-		def hash_to_properties(options)
-			properties = java.util.Properties.new
-
-			options.each do |key, value|
-				properties.put(key.to_s, value.to_s)
-			end
-
-			properties
-		end
-	end
+    def create_producer(options)
+      producer_impl = options.delete(:producer_impl) || Kafka::Producer::Producer
+      producer_impl.new(ProducerConfiguration.new(options).to_java)
+    end
+  end
 end

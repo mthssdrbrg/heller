@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'spec_helper'
 
 module Heller
@@ -16,14 +17,10 @@ module Heller
     end
 
     describe '#new' do
-      let :producer_config do
-        ProducerConfiguration.new(brokers: 'localhost:9092,localhost:9093', type: :async).to_java
-      end
-
       it 'converts options to a Kafka::Producer::ProducerConfig object' do
-        described_class.new('localhost:9092,localhost:9093', type: :async, producer_impl: producer_impl)
+        expect(producer_impl).to receive(:new) { |config| config.should be_a(Kafka::Producer::ProducerConfig) }
 
-        expect(producer_impl).to have_received(:new) { |config| config.should == producer_config }
+        described_class.new('localhost:9092,localhost:9093', type: :async, producer_impl: producer_impl)
       end
     end
 
@@ -31,23 +28,23 @@ module Heller
       it 'wraps messages in a java.util.ArrayList' do
         messages = [Heller::Message.new('topic', 'actual message', 'key!'), Heller::Message.new('topic2', 'payload')]
 
-        producer.push(messages)
-
-        expect(producer_spy).to have_received(:send) do |msgs|
+        expect(producer_spy).to receive(:send) do |msgs|
           msgs.should be_a(java.util.ArrayList)
           msgs.to_a.should == messages
         end
+
+        producer.push(messages)
       end
 
       it 'allows sending a single message' do
         message = Heller::Message.new('topic', 'actual message')
 
-        producer.push(message)
-
-        expect(producer_spy).to have_received(:send) do |msg|
+        expect(producer_spy).to receive(:send) do |msg|
           msg.should have(1).item
           msg.first.should == message
         end
+
+        producer.push(message)
       end
     end
 

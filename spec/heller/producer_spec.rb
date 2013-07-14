@@ -12,7 +12,7 @@ module Heller
     end
 
     let :producer_spy do
-      double(:producer, send: nil)
+      double(:producer, send: nil, close: nil)
     end
 
     describe '#new' do
@@ -48,6 +48,20 @@ module Heller
           msg.should have(1).item
           msg.first.should == message
         end
+      end
+    end
+
+    describe '#disconnect' do
+      it 'calls #close on the underlying producer' do
+        producer.disconnect
+
+        expect(producer_spy).to have_received(:close)
+      end
+
+      it 'is aliased to #close' do
+        producer.close
+
+        expect(producer_spy).to have_received(:close)
       end
     end
   end

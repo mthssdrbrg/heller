@@ -11,6 +11,11 @@ module Heller
       @producer.send(ArrayList.new(Array(messages)))
     end
 
+    def disconnect
+      @producer.close
+    end
+    alias_method :close, :disconnect
+
     private
 
     def create_producer(options)

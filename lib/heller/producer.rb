@@ -1,52 +1,21 @@
+# encoding: utf-8
+
 module Heller
-	class Producer < Kafka::Producer::Producer
+  class Producer
+    def initialize(broker_list, options = {})
+      @options = options.merge(brokers: broker_list)
+      @producer = create_producer(@options)
+    end
 
-		attr_reader :configuration
+    def push(messages)
+      @producer.send(ArrayList.new(Array(messages)))
+    end
 
-		def initialize(broker_list, options = {})
-			options = ({
-				'broker.list' => broker_list,
-				'producer.type' => 'sync'
-			}).merge(options)
+    private
 
-			@configuration = Kafka::Producer::ProducerConfig.new(hash_to_properties(options))
-			super(@configuration)
-		end
-
-		def single(topic, message, key = nil)
-			self.send(wrap_message(topic, key, message))
-		end
-
-		def multiple(*messages)
-			wrapped_messages = messages.map do |topic, message, key|
-				wrap_message(topic, key, message)
-			end
-
-			self.send(wrapped_messages)
-		end
-
-		def multiple_to(topic, messages)
-			wrapped_messages = messages.map do |message|
-				wrap_message(topic, nil, message)
-			end
-
-			self.send(wrapped_messages)
-		end
-
-		protected
-
-		def wrap_message(topic, key, message)
-			Kafka::Producer::KeyedMessage.new(topic, key, message)
-		end
-
-		def hash_to_properties(options)
-			properties = java.util.Properties.new
-
-			options.each do |key, value|
-				properties.put(key.to_s, value.to_s)
-			end
-
-			properties
-		end
-	end
+    def create_producer(options)
+      producer_impl = options.delete(:producer_impl) || Kafka::Producer::Producer
+      producer_impl.new(ProducerConfiguration.new(options).to_java)
+    end
+  end
 end

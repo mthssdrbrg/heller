@@ -1,82 +1,54 @@
+# encoding: utf-8
 require 'spec_helper'
 
 module Heller
+  describe Producer do
+    let(:producer) do
+      described_class.new('localhost:9092', producer_impl: producer_impl)
+    end
 
-	describe Producer do
+    let :producer_impl do
+      double(:producer_impl, new: producer_spy)
+    end
 
-		let(:producer) { Producer.new('localhost:9092') }
+    let :producer_spy do
+      double(:producer, send: nil)
+    end
 
-		describe '#new' do
+    describe '#new' do
+      let :producer_config do
+        ProducerConfiguration.new(brokers: 'localhost:9092,localhost:9093', type: :async).to_java
+      end
 
-			it 'should create a configuration from required arguments' do
-				expect {
-					producer = Producer.new('localhost:9092')
+      it 'converts options to a Kafka::Producer::ProducerConfig object' do
+        described_class.new('localhost:9092,localhost:9093', type: :async, producer_impl: producer_impl)
 
-					producer.configuration.should be_instance_of(Kafka::Producer::ProducerConfig)
-					producer.configuration.broker_list.should eq('localhost:9092')
-				}.to_not raise_error
-			end
+        expect(producer_impl).to have_received(:new) { |config| config.should == producer_config }
+      end
+    end
 
-			it 'should include optional options if any given' do
-				expect {
-					producer = Producer.new('localhost:9092', 'serializer.class' => 'kafka.serializer.StringEncoder')
+    describe '#push' do
+      it 'wraps messages in a java.util.ArrayList' do
+        messages = [Heller::Message.new('topic', 'actual message', 'key!'), Heller::Message.new('topic2', 'payload')]
 
-					producer.configuration.should be_instance_of(Kafka::Producer::ProducerConfig)
-					producer.configuration.serializer_class.should eq('kafka.serializer.StringEncoder')
-				}.to_not raise_error
-			end
-		end
+        producer.push(messages)
 
-		describe '#single' do
+        expect(producer_spy).to have_received(:send) do |msgs|
+          msgs.should be_a(java.util.ArrayList)
+          msgs.to_a.should == messages
+        end
+      end
 
-			it 'sends message' do
-				producer.should_receive(:send) do |keyed_message|
-					keyed_message.should be_instance_of(Kafka::Producer::KeyedMessage)
-					keyed_message.topic.should eq('1')
-					keyed_message.message.should eq('Test message')
-					keyed_message.key.should be_nil
-				end
+      it 'allows sending a single message' do
+        message = Heller::Message.new('topic', 'actual message')
 
-				producer.single('1', 'Test message')
-			end
-		end
+        producer.push(message)
 
-		describe '#multiple' do
-
-			it 'batches messages' do
-				producer.should_receive(:send) do |keyed_messages|
-					keyed_messages.each { |k| k.should be_instance_of(Kafka::Producer::KeyedMessage) }
-
-					first_message = keyed_messages.first
-					last_message = keyed_messages.last
-
-					first_message.topic.should eq('1')
-					first_message.message.should eq('Test message')
-					first_message.key.should be_nil
-
-					last_message.topic.should eq('2')
-					last_message.message.should eq('Second message')
-					last_message.key.should eq(1)
-				end
-
-				producer.multiple(['1', 'Test message'], ['2', 'Second message', 1])
-			end			
-		end
-
-		describe '#multiple_to' do
-
-			it 'batches messages going to same topic' do
-				producer.should_receive(:send) do |keyed_messages|
-					keyed_messages.each do |k| 
-						k.should be_instance_of(Kafka::Producer::KeyedMessage) 
-						k.key.should be_nil
-						k.topic.should eq('test-topic')
-						k.message.should be_kind_of(String)
-					end
-				end
-
-				producer.multiple_to('test-topic', ['Test message', 'Second message'])				
-			end
-		end
-	end
+        expect(producer_spy).to have_received(:send) do |msg|
+          msg.should have(1).item
+          msg.first.should == message
+        end
+      end
+    end
+  end
 end

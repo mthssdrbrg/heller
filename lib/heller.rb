@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 require 'kafka'
 
 module Heller
@@ -14,3 +15,4 @@ end
 
 require 'heller/producer'
 require 'heller/producer_configuration'
+require 'heller/message_set_enumerator'

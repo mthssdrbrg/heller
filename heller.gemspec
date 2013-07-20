@@ -14,8 +14,6 @@ Gem::Specification.new do |s|
 
   s.rubyforge_project = 'heller'
 
-  s.add_dependency 'kafka-jars', '~> 0.8.0.pre1'
-
   s.files         = Dir['lib/**/*.rb']
   s.require_paths = %w(lib)
 end

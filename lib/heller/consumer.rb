@@ -30,7 +30,7 @@ module Heller
     end
 
     def metadata(topics)
-      if topics && topics.any?
+      unless topics.empty?
         request = Kafka::Api::TopicMetadataRequest.new(topics)
         @consumer.send(request)
       end

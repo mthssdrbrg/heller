@@ -264,18 +264,6 @@ module Heller
           consumer.metadata([]).should be_nil
         end
       end
-
-      context 'given nil' do
-        it 'does not send any request' do
-          expect(consumer_spy).to_not receive(:send)
-
-          consumer.metadata(nil)
-        end
-
-        it 'returns nil' do
-          consumer.metadata(nil).should be_nil
-        end
-      end
     end
   end
 end

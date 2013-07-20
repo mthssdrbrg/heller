@@ -197,10 +197,44 @@ module Heller
       end
     end
 
-    describe '#earliest_offset', pending: 'fix #metadata first' do
+    describe '#earliest_offset' do
+      it 'sends an OffsetRequest with the magic value for \'earliest\' offset' do
+        expect(consumer_spy).to receive(:get_offsets_before) do |request|
+          request_info = request.underlying.request_info
+          request_info.values.first.time.should == -2
+        end
+
+        consumer.earliest_offset([['spec', 0]])
+      end
+
+      it 'fetches only one offset per topic-partition combination' do
+        expect(consumer_spy).to receive(:get_offsets_before) do |request|
+          request_info = request.underlying.request_info
+          request_info.values.first.max_num_offsets.should == 1
+        end
+
+        consumer.earliest_offset([['spec', 0]])
+      end
     end
 
-    describe '#latest_offset', pending: 'fix #metadata first' do
+    describe '#latest_offset' do
+      it 'sends an OffsetRequest with the magic value for \'latest\' offset' do
+        expect(consumer_spy).to receive(:get_offsets_before) do |request|
+          request_info = request.underlying.request_info
+          request_info.values.first.time.should == -1
+        end
+
+        consumer.latest_offset([['spec', 0]])
+      end
+
+      it 'fetches only one offset per topic-partition combination' do
+        expect(consumer_spy).to receive(:get_offsets_before) do |request|
+          request_info = request.underlying.request_info
+          request_info.values.first.max_num_offsets.should == 1
+        end
+
+        consumer.latest_offset([['spec', 0]])
+      end
     end
 
     describe '#metadata' do

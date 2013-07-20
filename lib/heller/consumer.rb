@@ -47,6 +47,14 @@ module Heller
       @consumer.get_offsets_before(request)
     end
 
+    def earliest_offset(topics_partitions)
+      offsets_before(create_offsets_hash(topics_partitions, Heller::OffsetRequest.earliest_time))
+    end
+
+    def latest_offset(topics_partitions)
+      offsets_before(create_offsets_hash(topics_partitions, Heller::OffsetRequest.latest_time))
+    end
+
     private
 
     DEFAULT_FETCH_SIZE = 1024 * 1024
@@ -77,6 +85,12 @@ module Heller
       end
 
       builder
+    end
+
+    def create_offsets_hash(topics_partitions, magic_offset)
+      topics_partitions.each_with_object({}) do |topic_partition, memo|
+        memo[topic_partition] = magic_offset
+      end
     end
   end
 end

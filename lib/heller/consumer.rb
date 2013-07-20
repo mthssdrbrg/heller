@@ -55,6 +55,11 @@ module Heller
       offsets_before(create_offsets_hash(topics_partitions, Heller::OffsetRequest.latest_time))
     end
 
+    def disconnect
+      @consumer.close
+    end
+    alias_method :close, :disconnect
+
     private
 
     DEFAULT_FETCH_SIZE = 1024 * 1024

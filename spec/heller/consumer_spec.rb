@@ -265,5 +265,23 @@ module Heller
         end
       end
     end
+
+    context '#disconnect' do
+      before do
+        consumer_spy.stub(:close)
+      end
+
+      it 'calls #close on the underlying consumer' do
+        consumer.disconnect
+
+        expect(consumer_spy).to have_received(:close)
+      end
+
+      it 'is aliased to #close' do
+        consumer.close
+
+        expect(consumer_spy).to have_received(:close)
+      end
+    end
   end
 end

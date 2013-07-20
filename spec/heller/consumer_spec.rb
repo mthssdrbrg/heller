@@ -154,15 +154,16 @@ module Heller
     describe '#latest_offset', pending: 'fix #metadata first' do
     end
 
-    describe '#metadata', pending: 'fix #fetch first' do
-      context 'given a list of topics' do
-        let :topic_metadata_response do
-        end
+    describe '#metadata' do
 
+      # TODO: look at TopicMetadataResponse a bit more and figure
+      # out if it's necessary to wrap it in some proxy class to
+      # make it more appealing
+
+      context 'given a list of topics' do
         it 'sends a TopicMetadataRequest' do
           expect(consumer_spy).to receive(:send) do |request|
             request.topics.to_a.should == ['topic1', 'topic2']
-            topic_metadata_response
           end
 
           consumer.metadata(['topic1', 'topic2'])
@@ -170,6 +171,27 @@ module Heller
       end
 
       context 'given an empty list' do
+        it 'does not send any request' do
+          expect(consumer_spy).to_not receive(:send)
+
+          consumer.metadata([])
+        end
+
+        it 'returns nil' do
+          consumer.metadata([]).should be_nil
+        end
+      end
+
+      context 'given nil' do
+        it 'does not send any request' do
+          expect(consumer_spy).to_not receive(:send)
+
+          consumer.metadata(nil)
+        end
+
+        it 'returns nil' do
+          consumer.metadata(nil).should be_nil
+        end
       end
     end
   end

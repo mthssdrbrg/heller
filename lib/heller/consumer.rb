@@ -29,6 +29,13 @@ module Heller
       end
     end
 
+    def metadata(topics)
+      if topics && topics.any?
+        request = Kafka::Api::TopicMetadataRequest.new(topics)
+        @consumer.send(request)
+      end
+    end
+
     private
 
     DEFAULT_FETCH_SIZE = 1024 * 1024

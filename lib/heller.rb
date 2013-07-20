@@ -11,6 +11,8 @@ module Heller
       super(topic, key, message)
     end
   end
+
+  java_import 'kafka.api.OffsetRequest'
 end
 
 require 'heller/producer'

@@ -36,6 +36,17 @@ module Heller
       end
     end
 
+    def offsets_before(offsets_hash)
+      request_info = offsets_hash.each_with_object({}) do |(topic_partition, time), memo|
+        topic_partition = Kafka::Common::TopicAndPartition.new(*topic_partition)
+        partition_offset = Kafka::Api::PartitionOffsetRequestInfo.new(time.to_i, 1)
+        memo[topic_partition] = partition_offset
+      end
+
+      request = Kafka::Api::OffsetRequest.new(request_info, Heller::OffsetRequest.current_version, client_id)
+      @consumer.get_offsets_before(request)
+    end
+
     private
 
     DEFAULT_FETCH_SIZE = 1024 * 1024

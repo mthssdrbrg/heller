@@ -145,7 +145,36 @@ module Heller
       end
     end
 
-    describe '#offsets_before', pending: 'fix #metadata first' do
+    describe '#offsets_before' do
+      before do
+        consumer_spy.stub(:get_offsets_before)
+      end
+
+      it 'sends an OffsetRequest using #get_offsets_before' do
+        expect(consumer_spy).to receive(:get_offsets_before) do |request|
+          request.should be_a(Kafka::Api::OffsetRequest)
+        end
+
+        consumer.offsets_before({['spec', 0] => Time.utc(2013, 7, 20)})
+      end
+
+      it 'includes client_id' do
+        expect(consumer_spy).to receive(:get_offsets_before) do |request|
+          request.underlying.client_id.should_not be_nil
+        end
+
+        consumer.offsets_before({['spec', 0] => Time.utc(2013, 7, 20)})
+      end
+
+      it 'accepts ints instead of Time objects' do
+        expect(consumer_spy).to receive(:get_offsets_before) do |request|
+          request_info = request.underlying.request_info
+          request.underlying.request_info.values.first.time.should be_zero
+          request_info.values.first.time.should be_zero
+        end
+
+        consumer.offsets_before({['spec', 0] => 0})
+      end
     end
 
     describe '#earliest_offset', pending: 'fix #metadata first' do

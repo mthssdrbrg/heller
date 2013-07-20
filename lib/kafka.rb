@@ -12,6 +12,7 @@ module Kafka
     java_import 'kafka.javaapi.TopicMetadata'
     java_import 'kafka.javaapi.TopicMetadataRequest'
     java_import 'kafka.javaapi.TopicMetadataResponse'
+    java_import 'kafka.api.PartitionOffsetRequestInfo'
   end
 
   module Common

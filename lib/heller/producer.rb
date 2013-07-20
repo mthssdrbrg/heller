@@ -3,8 +3,7 @@
 module Heller
   class Producer
     def initialize(broker_list, options = {})
-      @options = options.merge(brokers: broker_list)
-      @producer = create_producer(@options)
+      @producer = create_producer(options.merge(brokers: broker_list))
     end
 
     def push(messages)

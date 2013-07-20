@@ -13,7 +13,7 @@ module Heller
     end
 
     let :consumer_spy do
-      double(:consumer, fetch: create_fake_fetch_response)
+      double(:consumer, fetch: fetch_response)
     end
 
     let :fetch_response do
@@ -57,7 +57,7 @@ module Heller
     end
 
     describe '#fetch' do
-      it 'creates a FetchRequest with given topic, offset and partition' do
+      it 'creates FetchRequests from given hash' do
         expect(consumer_spy).to receive(:fetch) do |request|
           request.should be_a(Kafka::Api::FetchRequest)
           request_info = request.request_info
@@ -71,16 +71,18 @@ module Heller
           fetch_response
         end
 
-        consumer.fetch('spec', 0, 1)
+        consumer.fetch({['spec', 0] => 1})
       end
 
-      it 'returns an Enumerator over offset and decoded message pairs' do
+      it 'returns a hash with Enumerators over offset and decoded message pairs' do
         fake_fetch_response = create_fake_fetch_response('spec message', 'spec message #2')
         consumer_spy.stub(:fetch).and_return(fake_fetch_response)
 
-        messages = consumer.fetch('spec', 0, 0)
+        response_hash = consumer.fetch({['spec', 0] => 0})
+        response_hash.keys.should == [['spec', 0]]
+
         result = {}
-        messages.each { |o, m| result[o] = m }
+        response_hash.values.first.each { |o, m| result[o] = m }
         result.should == {0 => 'spec message', 1 => 'spec message #2'}
       end
 
@@ -93,7 +95,7 @@ module Heller
             fetch_response
           end
 
-          consumer.fetch('spec', 0, 0)
+          consumer.fetch({['spec', 0] => 0})
         end
 
         it 'allows fetch size to be overridden' do
@@ -104,7 +106,7 @@ module Heller
             fetch_response
           end
 
-          consumer.fetch('spec', 0, 0, 1024)
+          consumer.fetch({['spec', 0] => 0}, 1024)
         end
 
         it 'includes the client_id' do
@@ -114,7 +116,7 @@ module Heller
             fetch_response
           end
 
-          consumer.fetch('spec', 0, 0, 1024)
+          consumer.fetch({['spec', 0] => 0})
         end
 
         it 'includes max_wait if given when the consumer was created' do
@@ -126,7 +128,7 @@ module Heller
             fetch_response
           end
 
-          consumer.fetch('spec', 0, 0)
+          consumer.fetch({['spec', 0] => 0})
         end
 
         it 'includes min_bytes if given when the consumer was created' do
@@ -138,13 +140,37 @@ module Heller
             fetch_response
           end
 
-          consumer.fetch('spec', 0, 0)
+          consumer.fetch({['spec', 0] => 0})
         end
       end
     end
 
-    describe '#offsets_before' do
-      pending
+    describe '#offsets_before', pending: 'fix #metadata first' do
+    end
+
+    describe '#earliest_offset', pending: 'fix #metadata first' do
+    end
+
+    describe '#latest_offset', pending: 'fix #metadata first' do
+    end
+
+    describe '#metadata', pending: 'fix #fetch first' do
+      context 'given a list of topics' do
+        let :topic_metadata_response do
+        end
+
+        it 'sends a TopicMetadataRequest' do
+          expect(consumer_spy).to receive(:send) do |request|
+            request.topics.to_a.should == ['topic1', 'topic2']
+            topic_metadata_response
+          end
+
+          consumer.metadata(['topic1', 'topic2'])
+        end
+      end
+
+      context 'given an empty list' do
+      end
     end
   end
 end

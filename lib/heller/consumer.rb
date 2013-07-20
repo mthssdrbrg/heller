@@ -6,9 +6,9 @@ module Heller
   class Consumer
     def initialize(host, port, options = {})
       @host, @port = host, port
-      @options  = defaults.merge(options)
-      @consumer = create_consumer(@options)
-      @builder  = create_builder(@options)
+      options   = defaults.merge(options)
+      @consumer = create_consumer(options)
+      @builder  = create_builder(options)
       @decoder  = Kafka::Serializer::StringDecoder.new(nil)
     end
 
@@ -16,12 +16,17 @@ module Heller
       @consumer.client_id
     end
 
-    def fetch(topic, partition, offset, fetch_size = DEFAULT_FETCH_SIZE)
-      request     = @builder.add_fetch(topic, partition, offset, fetch_size).build
-      response    = @consumer.fetch(request)
-      message_set = response.message_set(topic, partition)
+    def fetch(fetch_hash, fetch_size = DEFAULT_FETCH_SIZE)
+      fetch_hash.each do |(topic, partition), offset|
+        @builder.add_fetch(topic, partition, offset, fetch_size)
+      end
 
-      MessageSetEnumerator.new(message_set, @decoder)
+      response = @consumer.fetch(@builder.build)
+
+      fetch_hash.each_key.with_object({}) do |topic_partition, memo|
+        message_set = response.message_set(*topic_partition)
+        memo[topic_partition] = MessageSetEnumerator.new(message_set, @decoder)
+      end
     end
 
     private

@@ -36,10 +36,10 @@ module Heller
       end
     end
 
-    def offsets_before(offsets_hash)
+    def offsets_before(offsets_hash, max_offsets = 1)
       request_info = offsets_hash.each_with_object({}) do |(topic_partition, time), memo|
         topic_partition = Kafka::Common::TopicAndPartition.new(*topic_partition)
-        partition_offset = Kafka::Api::PartitionOffsetRequestInfo.new(time.to_i, 1)
+        partition_offset = Kafka::Api::PartitionOffsetRequestInfo.new(time.to_i, max_offsets)
         memo[topic_partition] = partition_offset
       end
 

@@ -175,6 +175,26 @@ module Heller
 
         consumer.offsets_before({['spec', 0] => 0})
       end
+
+      context 'maximum number of offsets to fetch' do
+        it 'defaults to 1' do
+          expect(consumer_spy).to receive(:get_offsets_before) do |request|
+            request_info = request.underlying.request_info
+            request_info.values.first.max_num_offsets.should == 1
+          end
+
+          consumer.offsets_before({['spec', 0] => 0})
+        end
+
+        it 'is overridable' do
+          expect(consumer_spy).to receive(:get_offsets_before) do |request|
+            request_info = request.underlying.request_info
+            request_info.values.first.max_num_offsets.should == 10
+          end
+
+          consumer.offsets_before({['spec', 0] => 0}, 10)
+        end
+      end
     end
 
     describe '#earliest_offset', pending: 'fix #metadata first' do

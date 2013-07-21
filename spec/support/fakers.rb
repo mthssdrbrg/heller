@@ -35,10 +35,24 @@ module Fakers
     FakeFetchResponse.new('spec', 0, message_set)
   end
 
+  FakeMessageSet = Struct.new(:iterator)
+
+  class FakeIterator < Struct.new(:messages)
+    def next
+      messages.shift
+    end
+
+    def any?
+      messages.any?
+    end
+  end
+
   def create_fake_message_set(*payloads)
-    payloads.each_with_index.map do |payload, index|
+    messages = payloads.each_with_index.map do |payload, index|
       message = create_fake_message(payload)
       FakeMessageAndOffset.new(message, index)
     end
+
+    FakeMessageSet.new(FakeIterator.new(messages))
   end
 end

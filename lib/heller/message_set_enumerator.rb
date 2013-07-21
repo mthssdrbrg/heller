@@ -5,7 +5,7 @@ module Heller
     include Enumerable
 
     def initialize(message_set, decoder)
-      @message_set, @decoder = message_set, decoder
+      @iterator, @decoder = message_set.iterator, decoder
     end
 
     def each
@@ -15,8 +15,8 @@ module Heller
     end
 
     def next
-      if @message_set.any?
-        item = @message_set.shift
+      if @iterator.any?
+        item = @iterator.next
         offset, payload = item.offset, item.message.payload
         [offset, decode(payload)]
       else

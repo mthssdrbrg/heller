@@ -41,7 +41,6 @@ module Heller
 
         context 'client_id' do
           it 'makes some kind of attempt to generate a unique client id' do
-
             consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl)
             consumer.client_id.should =~ /heller\-consumer\-[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}/
           end
@@ -59,14 +58,14 @@ module Heller
     describe '#fetch' do
       it 'creates FetchRequests from given hash' do
         expect(consumer_spy).to receive(:fetch) do |request|
-          request.should be_a(Kafka::Api::FetchRequest)
+          expect(request).to be_a(Kafka::Api::FetchRequest)
           request_info = request.request_info
-          request_info.should have(1).item
+          expect(request_info).to have(1).item
 
           tuple = request_info.first
-          tuple._1.topic.should == 'spec'
-          tuple._1.partition.should == 0
-          tuple._2.offset.should == 1
+          expect(tuple._1.topic).to eq('spec')
+          expect(tuple._1.partition).to eq(0)
+          expect(tuple._2.offset).to eq(1)
 
           fetch_response
         end
@@ -79,18 +78,18 @@ module Heller
         consumer_spy.stub(:fetch).and_return(fake_fetch_response)
 
         response_hash = consumer.fetch({['spec', 0] => 0})
-        response_hash.keys.should == [['spec', 0]]
+        expect(response_hash.keys).to eq([['spec', 0]])
 
         result = {}
         response_hash.values.first.each { |o, m| result[o] = m }
-        result.should == {0 => 'spec message', 1 => 'spec message #2'}
+        expect(result).to eq({0 => 'spec message', 1 => 'spec message #2'})
       end
 
       context 'fetch options' do
         it 'sets a default fetch size' do
           expect(consumer_spy).to receive(:fetch) do |request|
             tuple = request.request_info.first
-            tuple._2.fetch_size.should == 1024 * 1024
+            expect(tuple._2.fetch_size).to eq(1024 * 1024)
 
             fetch_response
           end
@@ -101,7 +100,7 @@ module Heller
         it 'allows fetch size to be overridden' do
           expect(consumer_spy).to receive(:fetch) do |request|
             tuple = request.request_info.first
-            tuple._2.fetch_size.should == 1024
+            expect(tuple._2.fetch_size).to eq(1024)
 
             fetch_response
           end
@@ -111,7 +110,7 @@ module Heller
 
         it 'includes the client_id' do
           expect(consumer_spy).to receive(:fetch) do |request|
-            request.client_id.should == 'spec-consumer'
+            expect(request.client_id).to eq('spec-consumer')
 
             fetch_response
           end
@@ -123,7 +122,7 @@ module Heller
           consumer = described_class.new('localhost', '9092', consumer_impl: consumer_impl, client_id: 'spec-consumer', max_wait: 1)
 
           expect(consumer_spy).to receive(:fetch) do |request|
-            request.max_wait.should == 1
+            expect(request.max_wait).to eq(1)
 
             fetch_response
           end
@@ -135,7 +134,7 @@ module Heller
           consumer = described_class.new('localhost', '9092', consumer_impl: consumer_impl, client_id: 'spec-consumer', min_bytes: 1024)
 
           expect(consumer_spy).to receive(:fetch) do |request|
-            request.min_bytes.should == 1024
+            expect(request.min_bytes).to eq(1024)
 
             fetch_response
           end
@@ -152,7 +151,7 @@ module Heller
 
       it 'sends an OffsetRequest using #get_offsets_before' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
-          request.should be_a(Kafka::Api::OffsetRequest)
+          expect(request).to be_a(Kafka::Api::OffsetRequest)
         end
 
         consumer.offsets_before({['spec', 0] => Time.utc(2013, 7, 20)})
@@ -160,7 +159,7 @@ module Heller
 
       it 'includes client_id' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
-          request.underlying.client_id.should_not be_nil
+          expect(request.underlying.client_id).not_to be_nil
         end
 
         consumer.offsets_before({['spec', 0] => Time.utc(2013, 7, 20)})
@@ -169,8 +168,8 @@ module Heller
       it 'accepts ints instead of Time objects' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
-          request.underlying.request_info.values.first.time.should be_zero
-          request_info.values.first.time.should be_zero
+          expect(request.underlying.request_info.values.first.time).to eq(0)
+          expect(request_info.values.first.time).to eq(0)
         end
 
         consumer.offsets_before({['spec', 0] => 0})
@@ -180,7 +179,7 @@ module Heller
         it 'defaults to 1' do
           expect(consumer_spy).to receive(:get_offsets_before) do |request|
             request_info = request.underlying.request_info
-            request_info.values.first.max_num_offsets.should == 1
+            expect(request_info.values.first.max_num_offsets).to eq(1)
           end
 
           consumer.offsets_before({['spec', 0] => 0})
@@ -189,7 +188,7 @@ module Heller
         it 'is overridable' do
           expect(consumer_spy).to receive(:get_offsets_before) do |request|
             request_info = request.underlying.request_info
-            request_info.values.first.max_num_offsets.should == 10
+            expect(request_info.values.first.max_num_offsets).to eq(10)
           end
 
           consumer.offsets_before({['spec', 0] => 0}, 10)
@@ -201,7 +200,7 @@ module Heller
       it 'sends an OffsetRequest with the magic value for \'earliest\' offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
-          request_info.values.first.time.should == -2
+          expect(request_info.values.first.time).to eq(-2)
         end
 
         consumer.earliest_offset([['spec', 0]])
@@ -210,7 +209,7 @@ module Heller
       it 'fetches only one offset per topic-partition combination' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
-          request_info.values.first.max_num_offsets.should == 1
+          expect(request_info.values.first.max_num_offsets).to eq(1)
         end
 
         consumer.earliest_offset([['spec', 0]])
@@ -221,7 +220,7 @@ module Heller
       it 'sends an OffsetRequest with the magic value for \'latest\' offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
-          request_info.values.first.time.should == -1
+          expect(request_info.values.first.time).to eq(-1)
         end
 
         consumer.latest_offset([['spec', 0]])
@@ -230,7 +229,7 @@ module Heller
       it 'fetches only one offset per topic-partition combination' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
-          request_info.values.first.max_num_offsets.should == 1
+          expect(request_info.values.first.max_num_offsets).to eq(1)
         end
 
         consumer.latest_offset([['spec', 0]])
@@ -246,7 +245,7 @@ module Heller
       context 'given a list of topics' do
         it 'sends a TopicMetadataRequest' do
           expect(consumer_spy).to receive(:send) do |request|
-            request.topics.to_a.should == ['topic1', 'topic2']
+            expect(request.topics.to_a).to eq(['topic1', 'topic2'])
           end
 
           consumer.metadata(['topic1', 'topic2'])
@@ -261,7 +260,7 @@ module Heller
         end
 
         it 'returns nil' do
-          consumer.metadata([]).should be_nil
+          expect(consumer.metadata([])).to be_nil
         end
       end
     end

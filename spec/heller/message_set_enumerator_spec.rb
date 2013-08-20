@@ -19,21 +19,21 @@ module Heller
     describe '#next' do
       it 'returns the first offset and decoded message pair' do
         offset, message = enumerator.next
-        offset.should == 0
-        message.should == 'first'
+        expect(offset).to eq(0)
+        expect(message).to eq('first')
       end
 
       it 'returns the second offset and decoded message pair' do
         enumerator.next
         offset, message = enumerator.next
-        offset.should == 1
-        message.should == 'second'
+        expect(offset).to eq(1)
+        expect(message).to eq('second')
       end
 
       it 'returns each offset and decoded message pair in order' do
         result = []
         4.times { result << enumerator.next }
-        result.should == [[0, 'first'], [1, 'second'], [2, 'third'], [3, 'fourth']]
+        expect(result).to eq([[0, 'first'], [1, 'second'], [2, 'third'], [3, 'fourth']])
       end
 
       it 'raises StopIteration when all pairs have been returned' do
@@ -47,7 +47,7 @@ module Heller
       it 'returns each offset and decoded message pair' do
         result = []
         enumerator.each { |i| result << i }
-        result.should == [[0, 'first'], [1, 'second'], [2, 'third'], [3, 'fourth']]
+        expect(result).to eq([[0, 'first'], [1, 'second'], [2, 'third'], [3, 'fourth']])
       end
     end
   end

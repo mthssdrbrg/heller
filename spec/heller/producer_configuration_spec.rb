@@ -7,10 +7,10 @@ module Heller
     it 'has sane defaults for running locally' do
       configuration = described_class.new
 
-      configuration[:brokers].should == 'localhost:9092'
-      configuration[:serializer].should == 'kafka.serializer.StringEncoder'
-      configuration[:ack].should == -1
-      configuration[:type].should == :sync
+      expect(configuration[:brokers]).to eq('localhost:9092')
+      expect(configuration[:serializer]).to eq('kafka.serializer.StringEncoder')
+      expect(configuration[:ack]).to eq(-1)
+      expect(configuration[:type]).to eq(:sync)
     end
 
     context 'given hash with user-defined options' do
@@ -21,9 +21,9 @@ module Heller
           batch_size: 1500
         })
 
-        configuration[:brokers].should == 'localhost:9092,localhost:9093'
-        configuration[:serializer].should == 'kafka.serializer.DefaultEncoder'
-        configuration[:batch_size].should == 1500
+        expect(configuration[:brokers]).to eq('localhost:9092,localhost:9093')
+        expect(configuration[:serializer]).to eq('kafka.serializer.DefaultEncoder')
+        expect(configuration[:batch_size]).to eq(1500)
       end
     end
 
@@ -51,28 +51,28 @@ module Heller
       end
 
       it 'returns an instance of Kafka::Producer::ProducerConfig' do
-        configuration.to_java.should be_a(Kafka::Producer::ProducerConfig)
+        expect(configuration.to_java).to be_a(Kafka::Producer::ProducerConfig)
       end
 
       it 'converts Ruby options to their corresponding Kafka specific option' do
         producer_config = configuration.to_java
-        producer_config.broker_list.should == 'localhost:9092,localhost:9093'
-        producer_config.request_required_acks.should == -1
-        producer_config.producer_type.should == 'async'
-        producer_config.serializer_class.should == 'kafka.serializer.StringEncoder'
-        producer_config.key_serializer_class.should == 'kafka.serializer.DefaultEncoder'
-        producer_config.partitioner_class.should == 'kafka.producer.DefaultPartitioner'
-        producer_config.compression_codec.name.should == 'gzip'
-        producer_config.message_send_max_retries.should == 5
-        producer_config.retry_backoff_ms.should == 1500
-        producer_config.topic_metadata_refresh_interval_ms.should == 5000
-        producer_config.queue_buffering_max_ms.should == 1000 * 100
-        producer_config.queue_buffering_max_messages.should == 10000
-        producer_config.queue_enqueue_timeout_ms.should == 1000
-        producer_config.batch_num_messages.should == 2000
-        producer_config.send_buffer_bytes.should == 1024 * 1000
-        producer_config.client_id.should == 'spec-client'
-        producer_config.request_timeout_ms.should == 10000
+        expect(producer_config.broker_list).to eq('localhost:9092,localhost:9093')
+        expect(producer_config.request_required_acks).to eq(-1)
+        expect(producer_config.producer_type).to eq('async')
+        expect(producer_config.serializer_class).to eq('kafka.serializer.StringEncoder')
+        expect(producer_config.key_serializer_class).to eq('kafka.serializer.DefaultEncoder')
+        expect(producer_config.partitioner_class).to eq('kafka.producer.DefaultPartitioner')
+        expect(producer_config.compression_codec.name).to eq('gzip')
+        expect(producer_config.message_send_max_retries).to eq(5)
+        expect(producer_config.retry_backoff_ms).to eq(1500)
+        expect(producer_config.topic_metadata_refresh_interval_ms).to eq(5000)
+        expect(producer_config.queue_buffering_max_ms).to eq(1000 * 100)
+        expect(producer_config.queue_buffering_max_messages).to eq(10000)
+        expect(producer_config.queue_enqueue_timeout_ms).to eq(1000)
+        expect(producer_config.batch_num_messages).to eq(2000)
+        expect(producer_config.send_buffer_bytes).to eq(1024 * 1000)
+        expect(producer_config.client_id).to eq('spec-client')
+        expect(producer_config.request_timeout_ms).to eq(10000)
       end
     end
   end

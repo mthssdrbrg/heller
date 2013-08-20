@@ -18,9 +18,9 @@ module Heller
 
     describe '#new' do
       it 'converts options to a Kafka::Producer::ProducerConfig object' do
-        expect(producer_impl).to receive(:new) { |config| config.should be_a(Kafka::Producer::ProducerConfig) }
-
         described_class.new('localhost:9092,localhost:9093', type: :async, producer_impl: producer_impl)
+
+        expect(producer_impl).to have_received(:new).with(instance_of(Kafka::Producer::ProducerConfig))
       end
     end
 
@@ -29,8 +29,8 @@ module Heller
         messages = [Heller::Message.new('topic', 'actual message', 'key!'), Heller::Message.new('topic2', 'payload')]
 
         expect(producer_spy).to receive(:send) do |msgs|
-          msgs.should be_a(java.util.ArrayList)
-          msgs.to_a.should == messages
+          expect(msgs).to be_a(java.util.ArrayList)
+          expect(msgs.to_a).to eq(messages)
         end
 
         producer.push(messages)
@@ -39,9 +39,9 @@ module Heller
       it 'allows sending a single message' do
         message = Heller::Message.new('topic', 'actual message')
 
-        expect(producer_spy).to receive(:send) do |msg|
-          msg.should have(1).item
-          msg.first.should == message
+        expect(producer_spy).to receive(:send) do |msgs|
+          expect(msgs).to have(1).item
+          expect(msgs.first).to eq(message)
         end
 
         producer.push(message)

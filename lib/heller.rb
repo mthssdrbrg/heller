@@ -12,7 +12,32 @@ module Heller
     end
   end
 
+  class FetchRequest
+    attr_reader :topic, :partition, :offset
+
+    def initialize(*args)
+      @topic, @partition, @offset = *args
+    end
+  end
+
   java_import 'kafka.api.OffsetRequest'
+
+  module Concurrency
+    java_import 'java.util.concurrent.locks.ReentrantLock'
+
+    class Lock
+      def initialize
+        @lock = Concurrency::ReentrantLock.new
+      end
+
+      def lock
+        @lock.lock
+        yield
+      ensure
+        @lock.unlock
+      end
+    end
+  end
 end
 
 require 'heller/producer'

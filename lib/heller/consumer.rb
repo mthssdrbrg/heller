@@ -10,23 +10,23 @@ module Heller
       @consumer = create_consumer(options)
       @builder  = create_builder(options)
       @decoder  = Kafka::Serializer::StringDecoder.new(nil)
+      @build_lock = Concurrency::Lock.new
     end
 
     def client_id
       @consumer.client_id
     end
 
-    def fetch(fetch_hash, fetch_size = DEFAULT_FETCH_SIZE)
-      fetch_hash.each do |(topic, partition), offset|
-        @builder.add_fetch(topic, partition, offset, fetch_size)
+    def fetch(fetch_requests, fetch_size = DEFAULT_FETCH_SIZE)
+      kafka_fetch_request = @build_lock.lock do
+        Array(fetch_requests).each do |request|
+          @builder.add_fetch(request.topic, request.partition, request.offset, fetch_size)
+        end
+
+        @builder.build
       end
 
-      response = @consumer.fetch(@builder.build)
-
-      fetch_hash.each_key.with_object({}) do |topic_partition, memo|
-        message_set = response.message_set(*topic_partition)
-        memo[topic_partition] = MessageSetEnumerator.new(message_set, @decoder)
-      end
+      @consumer.fetch(kafka_fetch_request)
     end
 
     def metadata(topics)

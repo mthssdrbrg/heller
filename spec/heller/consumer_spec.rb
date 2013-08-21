@@ -13,11 +13,7 @@ module Heller
     end
 
     let :consumer_spy do
-      double(:consumer, fetch: fetch_response)
-    end
-
-    let :fetch_response do
-      create_fake_fetch_response
+      double(:consumer, fetch: nil)
     end
 
     before do
@@ -56,66 +52,81 @@ module Heller
     end
 
     describe '#fetch' do
-      it 'creates FetchRequests from given hash' do
-        expect(consumer_spy).to receive(:fetch) do |request|
-          expect(request).to be_a(Kafka::Api::FetchRequest)
-          request_info = request.request_info
-          expect(request_info).to have(1).item
-
-          tuple = request_info.first
-          expect(tuple._1.topic).to eq('spec')
-          expect(tuple._1.partition).to eq(0)
-          expect(tuple._2.offset).to eq(1)
-
-          fetch_response
-        end
-
-        consumer.fetch({['spec', 0] => 1})
+      let :topic do
+        'spec'
       end
 
-      it 'returns a hash with Enumerators over offset and decoded message pairs' do
-        fake_fetch_response = create_fake_fetch_response('spec message', 'spec message #2')
-        consumer_spy.stub(:fetch).and_return(fake_fetch_response)
+      let :partition do
+        0
+      end
 
-        response_hash = consumer.fetch({['spec', 0] => 0})
-        expect(response_hash.keys).to eq([['spec', 0]])
+      let :offset do
+        0
+      end
 
-        result = {}
-        response_hash.values.first.each { |o, m| result[o] = m }
-        expect(result).to eq({0 => 'spec message', 1 => 'spec message #2'})
+      context 'when given a single Heller::FetchRequest' do
+        it 'converts it to a Kafka::Api::FetchRequest' do
+          expect(consumer_spy).to receive(:fetch).with(instance_of(Kafka::Api::FetchRequest))
+
+          consumer.fetch(Heller::FetchRequest.new(topic, partition, offset))
+        end
+
+        it 'includes parameters from given Heller::FetchRequest' do
+          expect(consumer_spy).to receive(:fetch) do |request|
+            request_info = request.request_info
+            expect(request_info).to have(1).item
+
+            tuple = request_info.first
+            expect(tuple._1.topic).to eq('spec')
+            expect(tuple._1.partition).to eq(0)
+            expect(tuple._2.offset).to eq(0)
+          end
+
+          consumer.fetch(Heller::FetchRequest.new(topic, partition, offset))
+        end
+      end
+
+      context 'when given an array of Heller::FetchRequests' do
+        it 'converts them to a Kafka::Api::FetchRequest' do
+          expect(consumer_spy).to receive(:fetch) do |request|
+            expect(request).to be_a(Kafka::Api::FetchRequest)
+            expect(request.request_info).to have(3).items
+          end
+
+          requests = 3.times.map { |i| Heller::FetchRequest.new(topic, partition + i, offset) }
+          consumer.fetch(requests)
+        end
       end
 
       context 'fetch options' do
+        let :fetch_request do
+          Heller::FetchRequest.new(topic, partition, offset)
+        end
+
         it 'sets a default fetch size' do
           expect(consumer_spy).to receive(:fetch) do |request|
             tuple = request.request_info.first
             expect(tuple._2.fetch_size).to eq(1024 * 1024)
-
-            fetch_response
           end
 
-          consumer.fetch({['spec', 0] => 0})
+          consumer.fetch(fetch_request)
         end
 
         it 'allows fetch size to be overridden' do
           expect(consumer_spy).to receive(:fetch) do |request|
             tuple = request.request_info.first
             expect(tuple._2.fetch_size).to eq(1024)
-
-            fetch_response
           end
 
-          consumer.fetch({['spec', 0] => 0}, 1024)
+          consumer.fetch(fetch_request, 1024)
         end
 
         it 'includes the client_id' do
           expect(consumer_spy).to receive(:fetch) do |request|
             expect(request.client_id).to eq('spec-consumer')
-
-            fetch_response
           end
 
-          consumer.fetch({['spec', 0] => 0})
+          consumer.fetch(fetch_request)
         end
 
         it 'includes max_wait if given when the consumer was created' do
@@ -123,11 +134,9 @@ module Heller
 
           expect(consumer_spy).to receive(:fetch) do |request|
             expect(request.max_wait).to eq(1)
-
-            fetch_response
           end
 
-          consumer.fetch({['spec', 0] => 0})
+          consumer.fetch(fetch_request)
         end
 
         it 'includes min_bytes if given when the consumer was created' do
@@ -135,11 +144,9 @@ module Heller
 
           expect(consumer_spy).to receive(:fetch) do |request|
             expect(request.min_bytes).to eq(1024)
-
-            fetch_response
           end
 
-          consumer.fetch({['spec', 0] => 0})
+          consumer.fetch(fetch_request)
         end
       end
     end

@@ -5,6 +5,11 @@ module Kafka
   module Api
     java_import 'kafka.api.FetchRequest'
     java_import 'kafka.api.FetchRequestBuilder'
+    java_import 'kafka.api.PartitionOffsetRequestInfo'
+    java_import 'kafka.api.OffsetRequest'
+  end
+
+  module JavaApi
     java_import 'kafka.javaapi.FetchResponse'
     java_import 'kafka.javaapi.OffsetRequest'
     java_import 'kafka.javaapi.OffsetResponse'
@@ -12,7 +17,6 @@ module Kafka
     java_import 'kafka.javaapi.TopicMetadata'
     java_import 'kafka.javaapi.TopicMetadataRequest'
     java_import 'kafka.javaapi.TopicMetadataResponse'
-    java_import 'kafka.api.PartitionOffsetRequestInfo'
   end
 
   module Common

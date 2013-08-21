@@ -31,28 +31,29 @@ module Heller
 
     def metadata(topics)
       unless topics.empty?
-        request = Kafka::Api::TopicMetadataRequest.new(topics)
+        request = Kafka::JavaApi::TopicMetadataRequest.new(topics)
         @consumer.send(request)
       end
     end
 
-    def offsets_before(offsets_hash, max_offsets = 1)
-      request_info = offsets_hash.each_with_object({}) do |(topic_partition, time), memo|
-        topic_partition = Kafka::Common::TopicAndPartition.new(*topic_partition)
-        partition_offset = Kafka::Api::PartitionOffsetRequestInfo.new(time.to_i, max_offsets)
+    def offsets_before(offset_requests)
+      request_info = Array(offset_requests).each_with_object({}) do |request, memo|
+        topic_partition = Kafka::Common::TopicAndPartition.new(request.topic, request.partition)
+        partition_offset = Kafka::Api::PartitionOffsetRequestInfo.new(request.time.to_i, request.max_offsets)
+
         memo[topic_partition] = partition_offset
       end
 
-      request = Kafka::Api::OffsetRequest.new(request_info, Heller::OffsetRequest.current_version, client_id)
+      request = Kafka::JavaApi::OffsetRequest.new(request_info, Heller::OffsetRequest.current_version, client_id)
       @consumer.get_offsets_before(request)
     end
 
-    def earliest_offset(topics_partitions)
-      offsets_before(create_offsets_hash(topics_partitions, Heller::OffsetRequest.earliest_time))
+    def earliest_offset(topic, partition)
+      offsets_before(Heller::OffsetRequest.new(topic, partition, Heller::OffsetRequest.earliest_time))
     end
 
-    def latest_offset(topics_partitions)
-      offsets_before(create_offsets_hash(topics_partitions, Heller::OffsetRequest.latest_time))
+    def latest_offset(topic, partition)
+      offsets_before(Heller::OffsetRequest.new(topic, partition, Heller::OffsetRequest.latest_time))
     end
 
     def disconnect
@@ -90,12 +91,6 @@ module Heller
       end
 
       builder
-    end
-
-    def create_offsets_hash(topics_partitions, magic_offset)
-      topics_partitions.each_with_object({}) do |topic_partition, memo|
-        memo[topic_partition] = magic_offset
-      end
     end
   end
 end

@@ -156,12 +156,28 @@ module Heller
         consumer_spy.stub(:get_offsets_before)
       end
 
+      let :topic do
+        'spec'
+      end
+
+      let :partition do
+        0
+      end
+
+      let :time do
+        Time.utc(2013, 7, 20)
+      end
+
+      let :offset_request do
+        Heller::OffsetRequest.new(topic, partition, time)
+      end
+
       it 'sends an OffsetRequest using #get_offsets_before' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
-          expect(request).to be_a(Kafka::Api::OffsetRequest)
+          expect(request).to be_a(Kafka::JavaApi::OffsetRequest)
         end
 
-        consumer.offsets_before({['spec', 0] => Time.utc(2013, 7, 20)})
+        consumer.offsets_before(offset_request)
       end
 
       it 'includes client_id' do
@@ -169,7 +185,7 @@ module Heller
           expect(request.underlying.client_id).not_to be_nil
         end
 
-        consumer.offsets_before({['spec', 0] => Time.utc(2013, 7, 20)})
+        consumer.offsets_before(offset_request)
       end
 
       it 'accepts ints instead of Time objects' do
@@ -179,7 +195,8 @@ module Heller
           expect(request_info.values.first.time).to eq(0)
         end
 
-        consumer.offsets_before({['spec', 0] => 0})
+        offset_request = Heller::OffsetRequest.new(topic, partition, 0)
+        consumer.offsets_before(offset_request)
       end
 
       context 'maximum number of offsets to fetch' do
@@ -189,7 +206,7 @@ module Heller
             expect(request_info.values.first.max_num_offsets).to eq(1)
           end
 
-          consumer.offsets_before({['spec', 0] => 0})
+          consumer.offsets_before(Heller::OffsetRequest.new('spec', 0, 0))
         end
 
         it 'is overridable' do
@@ -198,7 +215,7 @@ module Heller
             expect(request_info.values.first.max_num_offsets).to eq(10)
           end
 
-          consumer.offsets_before({['spec', 0] => 0}, 10)
+          consumer.offsets_before(Heller::OffsetRequest.new('spec', 0, 0, 10))
         end
       end
     end
@@ -210,16 +227,16 @@ module Heller
           expect(request_info.values.first.time).to eq(-2)
         end
 
-        consumer.earliest_offset([['spec', 0]])
+        consumer.earliest_offset('spec', 0)
       end
 
-      it 'fetches only one offset per topic-partition combination' do
+      it 'fetches only one offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
           expect(request_info.values.first.max_num_offsets).to eq(1)
         end
 
-        consumer.earliest_offset([['spec', 0]])
+        consumer.earliest_offset('spec', 0)
       end
     end
 
@@ -230,16 +247,16 @@ module Heller
           expect(request_info.values.first.time).to eq(-1)
         end
 
-        consumer.latest_offset([['spec', 0]])
+        consumer.latest_offset('spec', 0)
       end
 
-      it 'fetches only one offset per topic-partition combination' do
+      it 'fetches only one offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
           expect(request_info.values.first.max_num_offsets).to eq(1)
         end
 
-        consumer.latest_offset([['spec', 0]])
+        consumer.latest_offset('spec', 0)
       end
     end
 

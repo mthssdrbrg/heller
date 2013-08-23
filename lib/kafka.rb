@@ -45,4 +45,8 @@ module Kafka
     java_import 'kafka.producer.SyncProducerConfig'
     java_import 'kafka.producer.KeyedMessage'
   end
+
+  module Errors
+    java_import 'kafka.common.ErrorMapping'
+  end
 end

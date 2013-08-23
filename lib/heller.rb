@@ -41,6 +41,14 @@ module Heller
     end
   end
 
+  Errors = Kafka::Errors::ErrorMapping
+
+  class Errors
+    def self.error_for(code)
+      self.exception_for(code)
+    end
+  end
+
   module Concurrency
     java_import 'java.util.concurrent.locks.ReentrantLock'
 

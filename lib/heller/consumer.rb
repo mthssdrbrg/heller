@@ -26,7 +26,7 @@ module Heller
         @builder.build
       end
 
-      @consumer.fetch(kafka_fetch_request)
+      FetchResponse.new(@consumer.fetch(kafka_fetch_request), @decoder)
     end
 
     def metadata(topics)

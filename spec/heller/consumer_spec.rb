@@ -65,10 +65,14 @@ module Heller
       end
 
       context 'when given a single Heller::FetchRequest' do
+        let :request do
+          Heller::FetchRequest.new(topic, partition, offset)
+        end
+
         it 'converts it to a Kafka::Api::FetchRequest' do
           expect(consumer_spy).to receive(:fetch).with(instance_of(Kafka::Api::FetchRequest))
 
-          consumer.fetch(Heller::FetchRequest.new(topic, partition, offset))
+          consumer.fetch(request)
         end
 
         it 'includes parameters from given Heller::FetchRequest' do
@@ -82,7 +86,11 @@ module Heller
             expect(tuple._2.offset).to eq(0)
           end
 
-          consumer.fetch(Heller::FetchRequest.new(topic, partition, offset))
+          consumer.fetch(request)
+        end
+
+        it 'returns a Heller::FetchResponse object' do
+          expect(consumer.fetch(request)).to be_a(Heller::FetchResponse)
         end
       end
 

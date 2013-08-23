@@ -5,6 +5,7 @@ require 'kafka'
 module Heller
   java_import 'java.util.ArrayList'
   java_import 'java.util.Properties'
+  java_import 'java.lang.IllegalArgumentException'
 
   class Message < Kafka::Producer::KeyedMessage
     def initialize(topic, message, key = nil)
@@ -56,9 +57,13 @@ module Heller
       end
     end
   end
+
+  HellerError = Class.new(StandardError)
+  NoSuchTopicPartitionCombinationError = Class.new(HellerError)
 end
 
 require 'heller/producer'
 require 'heller/producer_configuration'
 require 'heller/message_set_enumerator'
+require 'heller/fetch_response'
 require 'heller/consumer'

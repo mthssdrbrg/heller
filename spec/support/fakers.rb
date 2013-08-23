@@ -29,7 +29,7 @@ module Fakers
       messages.shift
     end
 
-    def any?
+    def has_next?
       messages.any?
     end
   end

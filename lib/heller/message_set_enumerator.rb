@@ -15,7 +15,7 @@ module Heller
     end
 
     def next
-      if @iterator.any?
+      if @iterator.has_next?
         item = @iterator.next
         offset, payload = item.offset, item.message.payload
         [offset, decode(payload)]

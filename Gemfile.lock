@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/mthssdrbrg/kafka-jars.git
-  revision: 4a1096a208246a03db614d04c4a0f44a71ff78f3
+  revision: fb358db5f28180360cebb6ff0d3e88a16c3768dd
   specs:
     kafka-jars (0.8.0.beta1-java)
 

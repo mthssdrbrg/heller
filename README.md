@@ -39,7 +39,7 @@ producer = Heller::Producer.new('localhost:9092,localhost:9093' {
 
 Check the official [Kafka docs](http://kafka.apache.org/documentation.html#producerapi) for possible values for each parameter.
 
-To send messages you creates instances of Heller::Message and feed them to the
+To send messages you creates instances of ```Heller::Message``` and feed them to the
 ```#push``` method of the producer:
 
 ```ruby

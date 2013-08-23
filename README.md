@@ -1,5 +1,7 @@
 # Heller
 
+[![Build Status](https://travis-ci.org/mthssdrbrg/heller.png?branch=master)](https://travis-ci.org/mthssdrbrg/heller)
+
 Heller is a thin JRuby wrapper around the Kafka Producer and (Simple)Consumer APIs, much like [Mikka](https://github.com/iconara/mikka) is a JRuby wrapper around Akka.
 
 The goal of Heller is to make the Producer and Consumer APIs of Kafka more

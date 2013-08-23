@@ -16,22 +16,22 @@ All configuration parameters are supported and can be used in the following way:
 
 ```ruby
 producer = Heller::Producer.new('localhost:9092,localhost:9093' {
-  type: :async,
-  serializer: 'kafka.serializer.StringEncoder',
-  key_serializer: 'kafka.serializer.DefaultEncoder',
-  partitioner: 'kafka.producer.DefaultPartitioner',
-  compression: :gzip,
-  num_retries: 5,
-  retry_backoff: 1500,
-  metadata_refresh_interval: 5000,
-  batch_size: 2000,
-  client_id: 'spec-client',
-  request_timeout: 10000,
-  buffer_limit: 100 * 100,
-  buffer_timeout: 1000 * 100,
-  enqueue_timeout: 1000,
-  socket_buffer: 1024 * 1000,
-  ack: -1
+  :type => :async,
+  :serializer => 'kafka.serializer.StringEncoder',
+  :key_serializer => 'kafka.serializer.DefaultEncoder',
+  :partitioner => 'kafka.producer.DefaultPartitioner',
+  :compression => :gzip,
+  :num_retries => 5,
+  :retry_backoff => 1500,
+  :metadata_refresh_interval => 5000,
+  :batch_size => 2000,
+  :client_id => 'spec-client',
+  :request_timeout => 10000,
+  :buffer_limit => 100 * 100,
+  :buffer_timeout => 1000 * 100,
+  :enqueue_timeout => 1000,
+  :socket_buffer => 1024 * 1000,
+  :ack => -1
 })
 ```
 

@@ -5,7 +5,7 @@ require 'spec_helper'
 module Heller
   describe Consumer do
     let(:consumer) do
-      described_class.new('localhost', 9092, consumer_impl: consumer_impl, client_id: 'spec-consumer')
+      described_class.new('localhost:9092', consumer_impl: consumer_impl, client_id: 'spec-consumer')
     end
 
     let :consumer_impl do
@@ -23,21 +23,26 @@ module Heller
       end
     end
 
-    describe '#new' do
+    describe '#initialize' do
+      it 'takes a connect string' do
+        consumer = described_class.new('localhost:9092', consumer_impl: consumer_impl)
+        expect(consumer_impl).to have_received(:new).with('localhost', 9092, anything, anything, anything)
+      end
+
       it 'proxies arguments when creating the internal consumer' do
-        consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl)
+        consumer = described_class.new('localhost:9092', consumer_impl: consumer_impl)
         expect(consumer_impl).to have_received(:new).with('localhost', 9092, anything, anything, anything)
       end
 
       context 'when not given any options' do
         it 'fills in sane defaults for missing options' do
-          consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl)
+          consumer = described_class.new('localhost:9092', consumer_impl: consumer_impl)
           expect(consumer_impl).to have_received(:new).with('localhost', 9092, 30000, 65536, anything)
         end
 
         context 'client_id' do
           it 'makes some kind of attempt to generate a unique client id' do
-            consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl)
+            consumer = described_class.new('localhost:9092', consumer_impl: consumer_impl)
             consumer.client_id.should =~ /heller\-consumer\-[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}/
           end
         end
@@ -45,7 +50,7 @@ module Heller
 
       context 'when given options' do
         it 'merges options with the defaults' do
-          consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl, timeout: 10, buffer_size: 11, client_id: 'hi')
+          consumer = described_class.new('localhost:9092', consumer_impl: consumer_impl, timeout: 10, buffer_size: 11, client_id: 'hi')
           expect(consumer_impl).to have_received(:new).with('localhost', 9092, 10, 11, 'hi')
         end
       end
@@ -138,7 +143,7 @@ module Heller
         end
 
         it 'includes max_wait if given when the consumer was created' do
-          consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl, client_id: 'spec-consumer', max_wait: 1)
+          consumer = described_class.new('localhost:9092', consumer_impl: consumer_impl, client_id: 'spec-consumer', max_wait: 1)
 
           expect(consumer_spy).to receive(:fetch) do |request|
             expect(request.max_wait).to eq(1)
@@ -148,7 +153,7 @@ module Heller
         end
 
         it 'includes min_bytes if given when the consumer was created' do
-          consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl, client_id: 'spec-consumer', min_bytes: 1024)
+          consumer = described_class.new('localhost:9092', consumer_impl: consumer_impl, client_id: 'spec-consumer', min_bytes: 1024)
 
           expect(consumer_spy).to receive(:fetch) do |request|
             expect(request.min_bytes).to eq(1024)

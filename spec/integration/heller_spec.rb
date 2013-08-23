@@ -11,7 +11,7 @@ module Heller
     end
 
     let :consumer do
-      Consumer.new('localhost', 9092, client_id: 'spec-consumer')
+      Consumer.new('localhost:9092', client_id: 'spec-consumer')
     end
 
     context 'simple string messages' do

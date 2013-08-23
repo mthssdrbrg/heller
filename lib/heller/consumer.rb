@@ -4,8 +4,8 @@ require 'securerandom'
 
 module Heller
   class Consumer
-    def initialize(host, port, options = {})
-      @host, @port = host, port
+    def initialize(connect_string, options = {})
+      @host, @port = connect_string.split(':')
       options   = defaults.merge(options)
       @consumer = create_consumer(options)
       @builder  = create_builder(options)
@@ -80,7 +80,7 @@ module Heller
     def create_consumer(options)
       consumer_impl = options.delete(:consumer_impl) || Kafka::Consumer::SimpleConsumer
       extra_options = options.values_at(:timeout, :buffer_size, :client_id)
-      consumer_impl.new(@host, @port, *extra_options)
+      consumer_impl.new(@host, @port.to_i, *extra_options)
     end
 
     def create_builder(options)

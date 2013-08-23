@@ -27,10 +27,7 @@ module Heller
         enumerator.should be_a(MessageSetEnumerator)
 
         messages = enumerator.to_a
-        expect(messages).to have(1).item
-
-        offset, message = messages.first
-        offset.should eq(0)
+        message = messages.last.last
         message.should eq('simple string message')
       end
 
@@ -42,10 +39,7 @@ module Heller
         enumerator.should be_a(MessageSetEnumerator)
 
         messages = enumerator.to_a
-        expect(messages).to have(1).item
-
-        offset, message = messages.first
-        offset.should eq(0)
+        message = messages.last.last
         expect(JSON.parse(message)).to eq({'a key' => 'a value'})
       end
     end

@@ -3,7 +3,8 @@
 [![Build Status](https://travis-ci.org/mthssdrbrg/heller.png?branch=master)](https://travis-ci.org/mthssdrbrg/heller)
 [![Coverage Status](https://coveralls.io/repos/mthssdrbrg/heller/badge.png?branch=master)](https://coveralls.io/r/mthssdrbrg/heller?branch=master)
 
-Heller is a thin JRuby wrapper around the Kafka Producer and (Simple)Consumer APIs, much like [Mikka](https://github.com/iconara/mikka) is a JRuby wrapper around Akka.
+Heller is a thin JRuby wrapper around the Kafka Producer and (Simple)Consumer
+APIs, much like [Mikka](https://github.com/iconara/mikka) is for Akka's Java API.
 
 The goal of Heller is to make the Producer and Consumer APIs of Kafka more
 Rubyesque, and useful as building blocks for creating more advanced producer and
@@ -63,3 +64,18 @@ that needs to be done for both the Producer and Consumer APIs.
 
 It's getting there, though I'm mostly doing this during my spare time, which is
 sparse at times.
+
+## Copyright
+
+Copyright 2013 Mathias Söderberg
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed
+under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+CONDITIONS OF ANY KIND, either express or implied. See the License for the
+specific language governing permissions and limitations under the License.

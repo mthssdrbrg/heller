@@ -1,22 +1,13 @@
 #!/bin/bash
 
-echo `gem env gemdir`
-
 BASE_DIR=$(dirname $0)/..
 KAFKA_DIR=$GEM_HOME/bundler/gems/kafka-jars-*/
-
-ls -l $(gem env gemdir)/gems/
-
 CONFIG_DIR=$BASE_DIR/spec/support/config
-
-echo $KAFKA_DIR
 
 for file in $KAFKA_DIR/lib/*.jar;
 do
   CLASSPATH=$CLASSPATH:$file
 done
-
-echo $CLASSPATH
 
 if [ -z "$KAFKA_JMX_OPTS" ]; then
   KAFKA_JMX_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "
@@ -37,13 +28,11 @@ else
 fi
 
 JMX_PORT=9998
-echo "Starting ZooKeeper..."
-$JAVA $KAFKA_OPTS $KAFKA_JMX_OPTS -cp $CLASSPATH org.apache.zookeeper.server.quorum.QuorumPeerMain $CONFIG_DIR/zookeeper.properties &
+$JAVA $KAFKA_OPTS $KAFKA_JMX_OPTS -cp $CLASSPATH org.apache.zookeeper.server.quorum.QuorumPeerMain $CONFIG_DIR/zookeeper.properties > /dev/null 2>&1 &
 
 sleep 2
 
 JMX_PORT=9999
-echo "Starting Kafka..."
-$JAVA $KAFKA_OPTS $KAFKA_JMX_OPTS -cp $CLASSPATH kafka.Kafka $CONFIG_DIR/server.properties &
+$JAVA $KAFKA_OPTS $KAFKA_JMX_OPTS -cp $CLASSPATH kafka.Kafka $CONFIG_DIR/server.properties > /dev/null 2>&1 &
 
 sleep 2

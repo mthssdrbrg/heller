@@ -59,8 +59,9 @@ producer.push(messages)
 ## Status
 
 The project is currently under development, and I wouldn't really recommend it
-to be used in any form of production environment. There is still quite some work
-that needs to be done for both the Producer and Consumer APIs.
+to be used in any form of production environment.
+There is still quite some work that needs to be done, especially for the Consumer API.
+The Producer API is more or less done, for the moment at least.
 
 It's getting there, though I'm mostly doing this during my spare time, which is
 sparse at times.

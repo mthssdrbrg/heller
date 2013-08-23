@@ -6,3 +6,5 @@ after_script: ./bin/kafka-stop
 rvm:
   - jruby-19mode
   - jruby-head
+jdk:
+  - openjdk7

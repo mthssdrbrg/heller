@@ -11,19 +11,21 @@ module Heller
     end
 
     def error(topic, partition)
-      @underlying.error_code(topic, partition)
-    rescue IllegalArgumentException => e
-      raise NoSuchTopicPartitionCombinationError, e.message, e.backtrace
+      convert_error { @underlying.error_code(topic, partition) }
     end
 
     def messages(topic, partition)
-      MessageSetEnumerator.new(@underlying.message_set(topic, partition), @decoder)
-    rescue IllegalArgumentException => e
-      raise NoSuchTopicPartitionCombinationError, e.message, e.backtrace
+      convert_error { MessageSetEnumerator.new(@underlying.message_set(topic, partition), @decoder) }
     end
 
     def high_watermark(topic, partition)
-      @underlying.high_watermark(topic, partition)
+      convert_error { @underlying.high_watermark(topic, partition) }
+    end
+
+    private
+
+    def convert_error
+      yield
     rescue IllegalArgumentException => e
       raise NoSuchTopicPartitionCombinationError, e.message, e.backtrace
     end

@@ -5,7 +5,7 @@ require 'spec_helper'
 module Heller
   describe Consumer do
     let(:consumer) do
-      described_class.new('localhost', '9092', consumer_impl: consumer_impl, client_id: 'spec-consumer')
+      described_class.new('localhost', 9092, consumer_impl: consumer_impl, client_id: 'spec-consumer')
     end
 
     let :consumer_impl do
@@ -138,7 +138,7 @@ module Heller
         end
 
         it 'includes max_wait if given when the consumer was created' do
-          consumer = described_class.new('localhost', '9092', consumer_impl: consumer_impl, client_id: 'spec-consumer', max_wait: 1)
+          consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl, client_id: 'spec-consumer', max_wait: 1)
 
           expect(consumer_spy).to receive(:fetch) do |request|
             expect(request.max_wait).to eq(1)
@@ -148,7 +148,7 @@ module Heller
         end
 
         it 'includes min_bytes if given when the consumer was created' do
-          consumer = described_class.new('localhost', '9092', consumer_impl: consumer_impl, client_id: 'spec-consumer', min_bytes: 1024)
+          consumer = described_class.new('localhost', 9092, consumer_impl: consumer_impl, client_id: 'spec-consumer', min_bytes: 1024)
 
           expect(consumer_spy).to receive(:fetch) do |request|
             expect(request.min_bytes).to eq(1024)

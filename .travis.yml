@@ -1,6 +1,8 @@
 language: ruby
 script: rspec
 bundler_args: --without development
+before_script: ./bin/kafka-start
+after_script: ./bin/kafka-stop
 rvm:
   - jruby-19mode
   - jruby-head

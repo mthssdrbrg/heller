@@ -6,7 +6,7 @@
 Heller is a thin JRuby wrapper around the Kafka Producer and (Simple)Consumer
 APIs, much like [Mikka](https://github.com/iconara/mikka) is for Akka's Java API.
 
-The goal of Heller is to make the Producer and Consumer APIs of Kafka more
+The goal of Heller is to make the Producer and Consumer APIs of Kafka a bit more
 Rubyesque, and useful as building blocks for creating more advanced producer and
 consumer implementations.
 

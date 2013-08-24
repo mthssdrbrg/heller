@@ -97,12 +97,9 @@ module Heller
             ["spec-single-metadata-topic-#{Time.now.to_i.to_s(36)}"]
           end
 
-          # TODO: add some form of wrapper class, or something, it's seems like a bother to manage
-          # TopicMetadata objects "manually".
-
           it 'returns metadata about given topic' do
             response = consumer.metadata(topics)
-            metadata = response.topics_metadata
+            metadata = response.metadata
 
             expect(metadata).to have(1).item
 
@@ -118,7 +115,7 @@ module Heller
 
           it 'returns metadata about given topics' do
             response = consumer.metadata(topics)
-            metadata = response.topics_metadata
+            metadata = response.metadata
 
             expect(metadata).to have(3).item
 

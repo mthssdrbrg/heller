@@ -274,18 +274,21 @@ module Heller
     end
 
     describe '#metadata' do
-
-      # TODO: look at TopicMetadataResponse a bit more and figure
-      # out if it's necessary to wrap it in some proxy class to
-      # make it more appealing
-
       context 'given a list of topics' do
+        before do
+          consumer_spy.stub(:send)
+        end
+
         it 'sends a TopicMetadataRequest' do
           expect(consumer_spy).to receive(:send) do |request|
             expect(request.topics.to_a).to eq(['topic1', 'topic2'])
           end
 
           consumer.metadata(['topic1', 'topic2'])
+        end
+
+        it 'returns a Heller::TopicMetadataResponse' do
+          expect(consumer.metadata(['topic1', 'topic2'])).to be_a(Heller::TopicMetadataResponse)
         end
       end
 

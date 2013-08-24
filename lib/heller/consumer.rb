@@ -32,7 +32,7 @@ module Heller
     def metadata(topics)
       unless topics.empty?
         request = Kafka::JavaApi::TopicMetadataRequest.new(topics)
-        @consumer.send(request)
+        Heller::TopicMetadataResponse.new(@consumer.send(request))
       end
     end
 

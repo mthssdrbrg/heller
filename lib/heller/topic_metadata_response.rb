@@ -31,6 +31,7 @@ module Heller
     def isr_for(topic, partition)
       with_cache(:isr, topic, partition)
     end
+    alias_method :in_sync_replicas_for, :isr_for
 
     private
 

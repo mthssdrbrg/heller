@@ -94,12 +94,12 @@ their usage is described below.
 topic = 'my-topic'
 partition = offset = 0
 
-fetch_response = consumer.fetch(Heller::FetchRequest.new(topic, partition, offset))
+response = consumer.fetch(Heller::FetchRequest.new(topic, partition, offset))
 
-if fetch_response.error? && (error_code = fetch_response.error(topic, partition)) != 0
+if response.error? && (error_code = response.error(topic, partition)) != 0
   puts "Got error #{Heller::Errors.error_for(error_code)}!"
 else
-  message_enumerator = fetch_response.messages(topic, partition)
+  message_enumerator = response.messages(topic, partition)
   message_enumerator.each do |offset, message_payload|
     puts "#{offset}: #{message_payload}"
   end
@@ -114,6 +114,55 @@ It's also possible to pass an array of ```FetchRequest``` objects to ```#fetch``
 ```ruby
 requests = [0, 1, 2].map { |i| Heller::FetchRequest.new(topic, i, offset) }
 fetch_response = consumer.fetch(requests)
+```
+
+### Topic and partition metadata
+
+```kafka.javaapi.consumer.SimpleConsumer``` exposes a method called ```#topic_metadata```, which in Heller has been "renamed" to just ```#metadata```.
+
+```ruby
+topics = [1, 2, 3].map { |i| "my-topic-#{i}" }
+
+response = consumer.metadata(topics)
+
+response.each do |topic, partition_metadata|
+  puts "Got metadata for (#{topic}:#{partition_metadata.partition_id})"
+end
+
+leader = response.leader_for('my-topic-1', 0)
+puts "Leader for my-topic-1:0 is at #{leader.connection_string} (#{leader.zk_string})"
+
+isrs = response.isr_for('my-topic-1', 0) # also aliased as #in_sync_replicas_for
+isrs.each do |isr|
+  puts "An in-sync replica for my-topic-1:0 is at #{isr.connection_string} (#{isr.zk_string})"
+end
+```
+
+### Get offsets for topic-partition combinations
+
+```ruby
+# arguments = *[topic, partition, timestamp (ms), max number of offsets]
+request = Heller::OffsetRequest.new('my-topic', 0, Time.now.to_i * 1000, 10)
+response = consumer.offsets_before(request)
+
+if response.error? && (error_code = response.error('my-topic', 0)) != 0
+  puts "Got error #{Heller::Errors.error_for(error_code)}!"
+else
+  offsets = response.offsets('my-topic', 0)
+  puts "Got #{offsets.join(', ')} offsets for my-topic:0"
+end
+```
+
+```Heller::Consumer``` also exposes (as ```SimpleConsumer```) two convenience
+methods for retrieving the earliest / latest offset for a topic-partition
+combination.
+
+```ruby
+earliest_offset = consumer.earliest_offset('my-topic', 0)
+latest_offset = consumer.latest_offset('my-topic', 0)
+
+puts "Earliest available offset is #{earliest_offset}"
+puts "Latest available offset is #{latest_offset}"
 ```
 
 ## Status

@@ -39,7 +39,7 @@ producer = Heller::Producer.new('localhost:9092,localhost:9093' {
 })
 ```
 
-Check the official [Kafka docs](http://kafka.apache.org/documentation.html#producerapi) for possible values for each parameter.
+Check the official [Kafka docs](http://kafka.apache.org/documentation.html#producerconfigs) for possible values for each parameter.
 
 To send messages you creates instances of ```Heller::Message``` and feed them to the
 ```#push``` method of the producer:
@@ -54,6 +54,66 @@ Want to partition messages based on some key? Sure, no problem:
 ```ruby
 messages = [0, 1, 2].map { |key| Heller::Message.new('test', "my message using #{key} as key!", key.to_s) }
 producer.push(messages)
+```
+
+## Consumer API
+
+```Heller::Consumer``` wraps ```kafka.javaapi.consumer.SimpleConsumer``` and provides
+basically the same methods, but with a bit more convenience (or at least I'd
+like to think so).
+
+A ```Consumer``` can be created in the following way:
+
+```ruby
+require 'heller'
+
+options = {
+  # 'generic' consumer options
+  :timeout => 5000,            # socket timeout
+  :buffer_size => 128 * 1024,  # socket buffer size
+  :client_id => 'my-consumer', # id of consumer
+  # fetch request related options
+  :max_wait => 4500,           # maximum time (ms) the consumer will wait for response of a request
+  :min_bytes => 1024           # minimum amount of bytes the server (broker) should return for a fetch request
+}
+
+consumer = Heller::Consumer.new('localhost:9092', options)
+```
+
+The options specified in the options hash are also described in the official
+[Kafka docs](http://kafka.apache.org/documentation.html#consumerconfigs), albeit they're described in the context of their high-level
+consumer.
+
+The consumer API exposes the following methods: ```#fetch```, ```#metadata```,
+```#offsets_before```, ```#earliest_offset``` and ```#latest_offset```, and
+their usage is described below.
+
+### Fetching messages
+
+```ruby
+topic = 'my-topic'
+partition = offset = 0
+
+fetch_response = consumer.fetch(Heller::FetchRequest.new(topic, partition, offset))
+
+if fetch_response.error? && (error_code = fetch_response.error(topic, partition)) != 0
+  puts "Got error #{Heller::Errors.error_for(error_code)}!"
+else
+  message_enumerator = fetch_response.messages(topic, partition)
+  message_enumerator.each do |offset, message_payload|
+    puts "#{offset}: #{message_payload}"
+  end
+end
+```
+
+See ```Heller::FetchResponse``` (and the related specs) for usage of other
+methods.
+
+It's also possible to pass an array of ```FetchRequest``` objects to ```#fetch```.
+
+```ruby
+requests = [0, 1, 2].map { |i| Heller::FetchRequest.new(topic, i, offset) }
+fetch_response = consumer.fetch(requests)
 ```
 
 ## Status

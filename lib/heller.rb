@@ -6,6 +6,7 @@ module Heller
   java_import 'java.util.ArrayList'
   java_import 'java.util.Properties'
   java_import 'java.lang.IllegalArgumentException'
+  java_import 'java.util.NoSuchElementException'
 
   class Message < Kafka::Producer::KeyedMessage
     def initialize(topic, message, key = nil)
@@ -75,5 +76,6 @@ require 'heller/producer_configuration'
 require 'heller/message_set_enumerator'
 require 'heller/fetch_response'
 require 'heller/topic_metadata_response'
+require 'heller/offset_response'
 require 'heller/consumer'
 require 'heller/version'

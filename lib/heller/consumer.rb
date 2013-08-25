@@ -49,11 +49,13 @@ module Heller
     end
 
     def earliest_offset(topic, partition)
-      offsets_before(Heller::OffsetRequest.new(topic, partition, Heller::OffsetRequest.earliest_time))
+      response = offsets_before(Heller::OffsetRequest.new(topic, partition, Heller::OffsetRequest.earliest_time))
+      response.offsets(topic, partition).first
     end
 
     def latest_offset(topic, partition)
-      offsets_before(Heller::OffsetRequest.new(topic, partition, Heller::OffsetRequest.latest_time))
+      response = offsets_before(Heller::OffsetRequest.new(topic, partition, Heller::OffsetRequest.latest_time))
+      response.offsets(topic, partition).last
     end
 
     def disconnect

@@ -238,27 +238,36 @@ module Heller
     end
 
     describe '#earliest_offset' do
+      let :fake_offset_response do
+        double(:offset_response)
+      end
+
       before do
-        consumer_spy.stub(:get_offsets_before)
+        consumer_spy.stub(:get_offsets_before).and_return(fake_offset_response)
+        fake_offset_response.stub(:offsets).with('spec', 0).and_return([0, 1, 2])
       end
 
       it 'sends an OffsetRequest with the magic value for \'earliest\' offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
           expect(request_info.values.first.time).to eq(-2)
+
+          fake_offset_response
         end
 
         consumer.earliest_offset('spec', 0)
       end
 
-      it 'returns a Heller::OffsetResponse' do
-        expect(consumer.earliest_offset('spec', 0)).to be_a(Heller::OffsetResponse)
+      it 'returns a single offset' do
+        expect(consumer.earliest_offset('spec', 0)).to eq(0)
       end
 
       it 'fetches only one offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
           expect(request_info.values.first.max_num_offsets).to eq(1)
+
+          fake_offset_response
         end
 
         consumer.earliest_offset('spec', 0)
@@ -266,27 +275,36 @@ module Heller
     end
 
     describe '#latest_offset' do
+      let :fake_offset_response do
+        double(:offset_response)
+      end
+
       before do
-        consumer_spy.stub(:get_offsets_before)
+        fake_offset_response.stub(:offsets).with('spec', 0).and_return([0, 1, 2])
+        consumer_spy.stub(:get_offsets_before).and_return(fake_offset_response)
       end
 
       it 'sends an OffsetRequest with the magic value for \'latest\' offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
           expect(request_info.values.first.time).to eq(-1)
+
+          fake_offset_response
         end
 
         consumer.latest_offset('spec', 0)
       end
 
-      it 'returns a Heller::OffsetResponse' do
-        expect(consumer.latest_offset('spec', 0)).to be_a(Heller::OffsetResponse)
+      it 'returns a single offset' do
+        expect(consumer.latest_offset('spec', 0)).to eq(2)
       end
 
       it 'fetches only one offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
           expect(request_info.values.first.max_num_offsets).to eq(1)
+
+          fake_offset_response
         end
 
         consumer.latest_offset('spec', 0)

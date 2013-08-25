@@ -19,6 +19,8 @@ producer with more Rubyesque names for configuration parameters.
 All configuration parameters are supported and can be used in the following way:
 
 ```ruby
+require 'heller'
+
 producer = Heller::Producer.new('localhost:9092,localhost:9093' {
   :type => :async,
   :serializer => 'kafka.serializer.StringEncoder',

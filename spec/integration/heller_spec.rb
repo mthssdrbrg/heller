@@ -7,7 +7,7 @@ require 'json'
 module Heller
   describe 'end-to-end communication' do
     let :producer do
-      Producer.new('localhost:9092', client_id: 'spec-producer')
+      Producer.new('localhost:9092', client_id: 'spec-producer', batch_size: 1)
     end
 
     let :consumer do
@@ -139,8 +139,8 @@ module Heller
               topics.each do |topic|
                 leader = response.leader_for(topic, 0)
 
-                expect(leader.connection_string).to match(/[a-z0-9\-.]+:9092/i)
-                expect(leader.zk_string).to match(/[a-z0-9\-.]+:9092/i)
+                expect(leader.connection_string).to match(/[a-z0-9\-\.]+:9092/i)
+                expect(leader.zk_string).to match(/[a-z0-9\-\.]+:9092/i)
               end
             end
           end
@@ -170,8 +170,8 @@ module Heller
 
                 replica = isr.first
 
-                expect(replica.connection_string).to match(/[a-z0-9\-.]+:9092/i)
-                expect(replica.zk_string).to match(/[a-z0-9\-.]+:9092/i)
+                expect(replica.connection_string).to match(/[a-z0-9\-\.]+:9092/i)
+                expect(replica.zk_string).to match(/[a-z0-9\-\.]+:9092/i)
               end
             end
           end
@@ -185,15 +185,69 @@ module Heller
       end
 
       describe '#offsets_before' do
-        pending
+        let :topic do
+          "spec-offsets-before-#{Time.now.to_i.to_s(36)}"
+        end
+
+        let :requests do
+          Heller::OffsetRequest.new(topic, 0, (Time.now + 1).to_i * 1000, 3)
+        end
+
+        let :response do
+          consumer.offsets_before(requests)
+        end
+
+        before do
+          3.times { producer.push(Heller::Message.new(topic, 'offsets request message')) }
+        end
+
+        context 'for existing topic-partition combination(s)' do
+          it 'returns the expected offsets' do
+            offsets = response.offsets(topic, 0)
+
+            expect(offsets).to have(2).items
+            expect(offsets.first).to be > offsets.last
+          end
+        end
+
+        context 'for non-existing topic-partition combination(s)' do
+          it 'raises NoSuchTopicPartitionCombinationError' do
+            expect { response.offsets('non-existent', 0) }.to raise_error(NoSuchTopicPartitionCombinationError)
+          end
+        end
       end
 
       describe '#earliest_offset' do
-        pending
+        let :topic do
+          "spec-earliest-offset-#{Time.now.to_i.to_s(36)}"
+        end
+
+        let :response do
+          consumer.earliest_offset(topic, 0)
+        end
+
+        before do
+          3.times { producer.push(Heller::Message.new(topic, 'offsets request message')) }
+        end
+
+        it 'returns the earliest offset' do
+          expect(response).to be_zero
+        end
       end
 
       describe '#latest_offset' do
-        pending
+        let :topic do
+          "spec-latest-offset-#{Time.now.to_i.to_s(36)}"
+        end
+
+        before do
+          3.times { producer.push(Heller::Message.new(topic, 'offsets request message')) }
+        end
+
+        it 'returns the latest offset' do
+          response = consumer.latest_offset(topic, 0)
+          expect(response).to eq(3)
+        end
       end
     end
   end

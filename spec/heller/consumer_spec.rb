@@ -193,6 +193,10 @@ module Heller
         consumer.offsets_before(offset_request)
       end
 
+      it 'returns a Heller::OffsetResponse' do
+        expect(consumer.offsets_before(offset_request)).to be_a(Heller::OffsetResponse)
+      end
+
       it 'includes client_id' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           expect(request.underlying.client_id).not_to be_nil
@@ -234,6 +238,10 @@ module Heller
     end
 
     describe '#earliest_offset' do
+      before do
+        consumer_spy.stub(:get_offsets_before)
+      end
+
       it 'sends an OffsetRequest with the magic value for \'earliest\' offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
@@ -241,6 +249,10 @@ module Heller
         end
 
         consumer.earliest_offset('spec', 0)
+      end
+
+      it 'returns a Heller::OffsetResponse' do
+        expect(consumer.earliest_offset('spec', 0)).to be_a(Heller::OffsetResponse)
       end
 
       it 'fetches only one offset' do
@@ -254,6 +266,10 @@ module Heller
     end
 
     describe '#latest_offset' do
+      before do
+        consumer_spy.stub(:get_offsets_before)
+      end
+
       it 'sends an OffsetRequest with the magic value for \'latest\' offset' do
         expect(consumer_spy).to receive(:get_offsets_before) do |request|
           request_info = request.underlying.request_info
@@ -261,6 +277,10 @@ module Heller
         end
 
         consumer.latest_offset('spec', 0)
+      end
+
+      it 'returns a Heller::OffsetResponse' do
+        expect(consumer.latest_offset('spec', 0)).to be_a(Heller::OffsetResponse)
       end
 
       it 'fetches only one offset' do

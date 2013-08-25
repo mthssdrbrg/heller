@@ -45,7 +45,7 @@ module Heller
       end
 
       request = Kafka::JavaApi::OffsetRequest.new(request_info, Heller::OffsetRequest.current_version, client_id)
-      @consumer.get_offsets_before(request)
+      Heller::OffsetResponse.new(@consumer.get_offsets_before(request))
     end
 
     def earliest_offset(topic, partition)

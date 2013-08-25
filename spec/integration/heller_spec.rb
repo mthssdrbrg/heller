@@ -124,6 +124,64 @@ module Heller
             end
           end
         end
+
+        describe '#leader_for' do
+          let :topics do
+            [1, 2, 3].map { |i| "spec-metadata-leader-for-#{i}-#{Time.now.to_i.to_s(36)}" }
+          end
+
+          let :response do
+            consumer.metadata(topics)
+          end
+
+          context 'for existing topic-partition combinations' do
+            it 'returns the correct leader for each topic-partition combination' do
+              topics.each do |topic|
+                leader = response.leader_for(topic, 0)
+
+                expect(leader.connection_string).to eq('localhost:9092')
+                expect(leader.zk_string).to eq('localhost:9092')
+              end
+            end
+          end
+
+          context 'for non-existing topic-partition combinations' do
+            it 'raises NoSuchTopicPartitionCombinationError' do
+              expect { response.leader_for('non-existent', 0) }.to raise_error(NoSuchTopicPartitionCombinationError)
+            end
+          end
+        end
+
+        describe '#isr_for' do
+          let :topics do
+            [1, 2, 3].map { |i| "spec-metadata-isr-for-#{i}-#{Time.now.to_i.to_s(36)}" }
+          end
+
+          let :response do
+            consumer.metadata(topics)
+          end
+
+          context 'for existing topic-partition combinations' do
+            it 'returns the correct in sync replicas for each topic-partition combination' do
+              topics.each do |topic|
+                isr = response.isr_for(topic, 0)
+
+                expect(isr).to have(1).item
+
+                replica = isr.first
+
+                expect(replica.connection_string).to eq('localhost:9092')
+                expect(replica.zk_string).to eq('localhost:9092')
+              end
+            end
+          end
+
+          context 'for non-existing topic-partition combinations' do
+            it 'raises NoSuchTopicPartitionCombinationError' do
+              expect { response.isr_for('non-existent', 0) }.to raise_error(NoSuchTopicPartitionCombinationError)
+            end
+          end
+        end
       end
 
       describe '#offsets_before' do

@@ -13,7 +13,7 @@ consumer implementations.
 ## Producer API
 
 ```Heller::Producer``` is an extremely simple wrapper class around
-```Kafka::Producer::Producer``` and provides some convenience in configuring the
+```kafka.javaapi.producer.Producer``` and provides some convenience in configuring the
 producer with more Rubyesque names for configuration parameters.
 
 All configuration parameters are supported and can be used in the following way:

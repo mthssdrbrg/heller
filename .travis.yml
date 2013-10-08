@@ -8,3 +8,6 @@ rvm:
   - jruby-head
 jdk:
   - openjdk7
+matrix:
+  allow_failures:
+    - rvm: jruby-head

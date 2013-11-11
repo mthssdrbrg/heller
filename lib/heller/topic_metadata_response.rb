@@ -2,6 +2,8 @@
 
 module Heller
   class TopicMetadataResponse
+    include Enumerable
+
     def initialize(underlying)
       @underlying = underlying
 

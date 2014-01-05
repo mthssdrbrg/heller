@@ -2,8 +2,6 @@
 
 require 'spec_helper'
 
-require 'json'
-
 module Heller
   describe 'end-to-end communication' do
     let :producer do

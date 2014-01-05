@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'json'
 require 'spec/support/fakers'
 
 RSpec.configure do |config|

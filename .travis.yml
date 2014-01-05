@@ -1,6 +1,5 @@
 language: ruby
-script: rspec
-bundler_args: --without development
+script: bundle exec rspec
 before_script: ./bin/kafka-start
 after_script: ./bin/kafka-stop
 rvm:

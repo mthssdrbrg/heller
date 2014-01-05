@@ -140,7 +140,6 @@ module Heller
                 leader = response.leader_for(topic, 0)
 
                 expect(leader.connection_string).to match(/[a-z0-9\-\.]+:9092/i)
-                expect(leader.zk_string).to match(/[a-z0-9\-\.]+:9092/i)
               end
             end
           end
@@ -171,7 +170,6 @@ module Heller
                 replica = isr.first
 
                 expect(replica.connection_string).to match(/[a-z0-9\-\.]+:9092/i)
-                expect(replica.zk_string).to match(/[a-z0-9\-\.]+:9092/i)
               end
             end
           end

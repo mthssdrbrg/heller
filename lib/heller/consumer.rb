@@ -32,7 +32,7 @@ module Heller
     def metadata(topics)
       unless topics.empty?
         request = Kafka::JavaApi::TopicMetadataRequest.new(topics)
-        Heller::TopicMetadataResponse.new(@consumer.send(request))
+        TopicMetadataResponse.new(@consumer.send(request))
       end
     end
 
@@ -44,17 +44,17 @@ module Heller
         memo[topic_partition] = partition_offset
       end
 
-      request = Kafka::JavaApi::OffsetRequest.new(request_info, Heller::OffsetRequest.current_version, client_id)
-      Heller::OffsetResponse.new(@consumer.get_offsets_before(request))
+      request = Kafka::JavaApi::OffsetRequest.new(request_info, OffsetRequest.current_version, client_id)
+      OffsetResponse.new(@consumer.get_offsets_before(request))
     end
 
     def earliest_offset(topic, partition)
-      response = offsets_before(Heller::OffsetRequest.new(topic, partition, Heller::OffsetRequest.earliest_time))
+      response = offsets_before(OffsetRequest.new(topic, partition, OffsetRequest.earliest_time))
       response.offsets(topic, partition).first
     end
 
     def latest_offset(topic, partition)
-      response = offsets_before(Heller::OffsetRequest.new(topic, partition, Heller::OffsetRequest.latest_time))
+      response = offsets_before(OffsetRequest.new(topic, partition, OffsetRequest.latest_time))
       response.offsets(topic, partition).last
     end
 

@@ -1,7 +1,6 @@
 language: ruby
 script: bundle exec rspec
 before_script: ./bin/kafka-start
-after_script: ./bin/kafka-stop
 rvm:
   - jruby
 jdk:

@@ -1,30 +1,31 @@
 #!/bin/bash
 
-BASE_DIR=$(dirname $0)/..
-KAFKA_DIR=$GEM_HOME/bundler/gems/kafka-jars-*/
-CONFIG_DIR=$BASE_DIR/spec/support/config
+function awaitport() {
+  for i in {1..10}; do
+    nc -z localhost $1 && return 0
+    sleep 1
+  done
+  echo "Failed to connect to port $1"
+  return 1
+}
 
-for file in $KAFKA_DIR/lib/*.jar;
-do
-  CLASSPATH=$CLASSPATH:$file
-done
+log_dir=$base_dir/tmp
+mkdir -p $log_dir
 
-if [ -z "$KAFKA_OPTS" ]; then
-  KAFKA_OPTS="-Xmx512M -server -Dlog4j.configuration=file:$CONFIG_DIR/log4j.properties"
-fi
+base_dir=$(dirname $0)/..
+config_dir=$base_dir/spec/support/config
+kafka_dir=$(bundle show kafka-jars)
+classpath=$(ls -1 $kafka_dir/lib/*.jar | paste -sd: -)
+kafka_java_opts="-Xmx512M -server -Dlog4j.configuration=file:$config_dir/log4j.properties -cp $classpath"
 
-if [ -z "$JAVA_HOME" ]; then
-  JAVA="java"
-else
-  JAVA="$JAVA_HOME/bin/java"
-fi
+echo "Starting zookeeper"
 
-JMX_PORT=9998
-$JAVA $KAFKA_OPTS -cp $CLASSPATH org.apache.zookeeper.server.quorum.QuorumPeerMain $CONFIG_DIR/zookeeper.properties > /dev/null 2>&1 &
+java $kafka_java_opts org.apache.zookeeper.server.quorum.QuorumPeerMain $config_dir/zookeeper.properties < /dev/null >> $log_dir/zookeeper_console.log 2>&1 &
 
-sleep 2
+awaitport 2181 || exit 1
 
-JMX_PORT=9999
-$JAVA $KAFKA_OPTS -cp $CLASSPATH kafka.Kafka $CONFIG_DIR/server.properties > /dev/null 2>&1 &
+echo "Starting kafka"
 
-sleep 2
+java $kafka_java_opts kafka.Kafka $config_dir/server.properties < /dev/null >> $log_dir/kafka_console.log 2>&1 &
+
+awaitport 9092 || exit 1

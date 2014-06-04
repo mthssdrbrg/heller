@@ -3,10 +3,6 @@ script: bundle exec rspec
 before_script: ./bin/kafka-start
 after_script: ./bin/kafka-stop
 rvm:
-  - jruby-19mode
-  - jruby-head
+  - jruby
 jdk:
   - openjdk7
-matrix:
-  allow_failures:
-    - rvm: jruby-head

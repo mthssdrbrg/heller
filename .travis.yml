@@ -1,12 +1,9 @@
 language: ruby
 script: bundle exec rspec
-before_script: ./bin/kafka-start
-after_script: ./bin/kafka-stop
+before_script:
+  - ./bin/kafka-start || true
+  - 'tail -n +1 tmp/*.log'
 rvm:
-  - jruby-19mode
-  - jruby-head
+  - jruby
 jdk:
   - openjdk7
-matrix:
-  allow_failures:
-    - rvm: jruby-head

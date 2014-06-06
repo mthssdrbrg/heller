@@ -2,6 +2,7 @@
 
 require 'kafka'
 
+
 module Heller
   java_import 'java.util.ArrayList'
   java_import 'java.util.Properties'
@@ -81,3 +82,4 @@ require 'heller/offset_response'
 require 'heller/consumer'
 require 'heller/version'
 require 'heller/consumer_configuration'
+require 'heller/zookeeper_consumer'

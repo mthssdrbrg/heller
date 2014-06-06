@@ -9,14 +9,14 @@ function awaitport() {
   return 1
 }
 
-log_dir=$base_dir/tmp
-mkdir -p $log_dir
-
 base_dir=$(dirname $0)/..
+log_dir=$base_dir/tmp
 config_dir=$base_dir/spec/support/config
 kafka_dir=$(bundle show kafka-jars)
 classpath=$(ls -1 $kafka_dir/lib/*.jar | paste -sd: -)
 kafka_java_opts="-Xmx512M -server -Dlog4j.configuration=file:$config_dir/log4j.properties -cp $classpath"
+
+mkdir -p $log_dir
 
 echo "Starting zookeeper"
 

@@ -6,7 +6,7 @@ require 'spec_helper'
 module Heller
   describe 'end-to-end communication' do
     let :producer do
-      Producer.new('localhost:9092', client_id: 'spec-producer', batch_size: 1)
+      Producer.new('localhost:9092', client_id: 'spec-producer', batch_size: 1, num_retries: 10, retry_backoff: 1000)
     end
 
     let :consumer do

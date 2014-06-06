@@ -25,13 +25,13 @@ function start() {
 
   java $kafka_java_opts org.apache.zookeeper.server.quorum.QuorumPeerMain $config_dir/zookeeper.properties < /dev/null >> $log_dir/zookeeper_console.log 2>&1 &
 
-  awaitport 2181 || return RETVAL=1
+  awaitport 2181 || (RETVAL=1 && return)
 
   echo "Starting kafka"
 
   java $kafka_java_opts kafka.Kafka $config_dir/server.properties < /dev/null >> $log_dir/kafka_console.log 2>&1 &
 
-  awaitport 9092 || return RETVAL=1
+  awaitport 9092 || (RETVAL=1 && return)
 }
 
 function stop() {

@@ -71,6 +71,7 @@ module Heller
   NoSuchTopicPartitionCombinationError = Class.new(HellerError)
 end
 
+require 'heller/configuration'
 require 'heller/producer'
 require 'heller/producer_configuration'
 require 'heller/message_set_enumerator'

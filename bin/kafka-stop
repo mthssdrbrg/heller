@@ -1,6 +1,0 @@
-#!/bin/bash
-
-kill `jps -m | grep Kafka | cut -d ' ' -f 1` > /dev/null 2>&1
-kill `jps -m | grep zookeeper | cut -d ' ' -f 1` > /dev/null 2>&1
-
-sleep 2

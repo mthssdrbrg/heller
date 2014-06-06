@@ -1,0 +1,62 @@
+#!/bin/bash
+
+function awaitport() {
+  for i in {1..10}; do
+    nc -z localhost $1 && return 0
+    sleep 1
+  done
+  echo "Failed to connect to port $1"
+  return 1
+}
+
+function start() {
+  base_dir=$(dirname $0)/..
+  log_dir=$base_dir/tmp
+  config_dir=$base_dir/spec/support/config
+  gems_dir="$GEM_HOME/gems"
+  classpath=$(ls -1 $gems_dir/scala-library-jars-*/lib/*.jar | paste -sd: -)
+  classpath=$classpath:$(ls -1 $gems_dir/slf4j-jars-*/lib/slf4j-{api,simple}-*.jar | paste -sd: -)
+  classpath=$classpath:$(ls -1 $gems_dir/kafka-jars-*/lib/*.jar | paste -sd: -)
+  classpath=$classpath:$(ls -1 $gems_dir/zookeeper-jars-*/lib/*.jar | paste -sd: -)
+  kafka_java_opts="-Xmx512M -server -Dlog4j.configuration=file:$config_dir/log4j.properties -cp $classpath"
+
+  mkdir -p $log_dir
+
+  echo "Starting zookeeper"
+
+  java $kafka_java_opts org.apache.zookeeper.server.quorum.QuorumPeerMain $config_dir/zookeeper.properties < /dev/null >> $log_dir/zookeeper_console.log 2>&1 &
+
+  awaitport 2181 || return RETVAL=1
+
+  echo "Starting kafka"
+
+  java $kafka_java_opts kafka.Kafka $config_dir/server.properties < /dev/null >> $log_dir/kafka_console.log 2>&1 &
+
+  awaitport 9092 || return RETVAL=1
+}
+
+function stop() {
+  kill $(jps -m | grep Kafka | cut -d ' ' -f 1) > /dev/null 2>&1
+  kill $(jps -m | grep zookeeper | cut -d ' ' -f 1) > /dev/null 2>&1
+}
+
+RETVAL=0
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  *)
+    echo "Usage: $NAME {start|stop|restart}" >&2
+    RETVAL=3
+    ;;
+esac
+
+exit $RETVAL

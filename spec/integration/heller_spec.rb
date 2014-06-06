@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+
 module Heller
   describe 'end-to-end communication' do
     let :producer do

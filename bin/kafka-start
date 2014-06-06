@@ -12,8 +12,11 @@ function awaitport() {
 base_dir=$(dirname $0)/..
 log_dir=$base_dir/tmp
 config_dir=$base_dir/spec/support/config
-kafka_dir=$(bundle show kafka-jars)
-classpath=$(ls -1 $kafka_dir/lib/*.jar | paste -sd: -)
+gems_dir="$GEM_HOME/gems"
+classpath=$(ls -1 $gems_dir/scala-library-jars-*/lib/*.jar | paste -sd: -)
+classpath=$classpath:$(ls -1 $gems_dir/slf4j-jars-*/lib/slf4j-{api,simple}-*.jar | paste -sd: -)
+classpath=$classpath:$(ls -1 $gems_dir/kafka-jars-*/lib/*.jar | paste -sd: -)
+classpath=$classpath:$(ls -1 $gems_dir/zookeeper-jars-*/lib/*.jar | paste -sd: -)
 kafka_java_opts="-Xmx512M -server -Dlog4j.configuration=file:$config_dir/log4j.properties -cp $classpath"
 
 mkdir -p $log_dir

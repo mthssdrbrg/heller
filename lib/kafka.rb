@@ -1,5 +1,8 @@
 # encoding: utf-8
+
+require 'slf4j-jars'
 require 'kafka-jars'
+
 
 module Kafka
   module Api

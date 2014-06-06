@@ -41,6 +41,10 @@ module Heller
           consumer.fetch(FetchRequest.new(topic, 0, 0))
         end
 
+        let :enumerator do
+          fetch_response.messages(topic, 0)
+        end
+
         context 'simple string messages' do
           let :topic do
             "spec-simple-string-#{Time.now.to_i.to_s(36)}"
@@ -51,11 +55,10 @@ module Heller
           end
 
           it 'is no big deal' do
-            enumerator = fetch_response.messages(topic, 0)
-            enumerator.should be_a(MessageSetEnumerator)
+            expect(enumerator).to be_a(MessageSetEnumerator)
 
             messages = enumerator.to_a
-            expect(messages).to have(1).item
+            expect(messages.size).to eq(1)
 
             offset, message = messages.last
             expect(offset).to be_zero
@@ -73,11 +76,10 @@ module Heller
           end
 
           it 'is no big deal' do
-            enumerator = fetch_response.messages(topic, 0)
-            enumerator.should be_a(MessageSetEnumerator)
+            expect(enumerator).to be_a(MessageSetEnumerator)
 
             messages = enumerator.to_a
-            expect(messages).to have(1).item
+            expect(messages.size).to eq(1)
 
             offset, message = messages.last
             expect(offset).to be_zero
@@ -100,7 +102,7 @@ module Heller
             response = consumer.metadata(topics)
             metadata = response.metadata
 
-            expect(metadata).to have(1).item
+            expect(metadata.size).to eq(1)
 
             topic_metadata = metadata.first
             expect(topic_metadata.topic).to eq(topics.first)
@@ -116,7 +118,7 @@ module Heller
             response = consumer.metadata(topics)
             metadata = response.metadata
 
-            expect(metadata).to have(3).item
+            expect(metadata.size).to eq(3)
 
             topics.zip(metadata).each do |topic, metadata|
               expect(metadata.topic).to eq(topic)
@@ -164,7 +166,7 @@ module Heller
               topics.each do |topic|
                 isr = response.isr_for(topic, 0)
 
-                expect(isr).to have(1).item
+                expect(isr.size).to eq(1)
 
                 replica = isr.first
 
@@ -202,7 +204,7 @@ module Heller
           it 'returns the expected offsets' do
             offsets = response.offsets(topic, 0)
 
-            expect(offsets).to have(2).items
+            expect(offsets.size).to eq(2)
             expect(offsets.first).to be > offsets.last
           end
         end

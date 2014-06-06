@@ -40,7 +40,7 @@ module Heller
       end
 
       it 'sets #auto_commit_enable' do
-        expect(configuration.auto_commit_enable).to be_false
+        expect(configuration.auto_commit_enable).to be false
       end
 
       it 'sets #auto_commit_interval_ms' do

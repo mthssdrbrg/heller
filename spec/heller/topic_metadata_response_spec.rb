@@ -22,8 +22,8 @@ module Heller
       end
 
       before do
-        fake_topics_metadata.stub(:topic).and_return('spec')
-        fake_topics_metadata.stub(:partitions_metadata).and_return([fake_partition_metadata])
+        allow(fake_topics_metadata).to receive(:topic).and_return('spec')
+        allow(fake_topics_metadata).to receive(:partitions_metadata).and_return([fake_partition_metadata])
       end
 
       it 'yields topic and partition_metadata' do
@@ -35,7 +35,7 @@ module Heller
 
     describe '#metadata' do
       before do
-        underlying.stub(:topics_metadata)
+        allow(underlying).to receive(:topics_metadata)
       end
 
       it 'returns #topics_metadata' do
@@ -52,10 +52,10 @@ module Heller
         end
 
         before do
-          fake_topics_metadata.stub(:topic).and_return('spec')
-          fake_topics_metadata.stub(:partitions_metadata).and_return([fake_partition_metadata])
-          fake_partition_metadata.stub(:partition_id).and_return(0)
-          fake_partition_metadata.stub(:leader).and_return('a non-nil value')
+          allow(fake_topics_metadata).to receive(:topic).and_return('spec')
+          allow(fake_topics_metadata).to receive(:partitions_metadata).and_return([fake_partition_metadata])
+          allow(fake_partition_metadata).to receive(:partition_id).and_return(0)
+          allow(fake_partition_metadata).to receive(:leader).and_return('a non-nil value')
         end
 
         it 'returns the leader' do
@@ -73,7 +73,7 @@ module Heller
 
       context 'given a topic-partition combination that does not exist' do
         before do
-          fake_topics_metadata.stub(:topic).and_return('not-spec')
+          allow(fake_topics_metadata).to receive(:topic).and_return('not-spec')
         end
 
         it 'raises NoSuchTopicPartitionCombinationError' do
@@ -89,10 +89,10 @@ module Heller
         end
 
         before do
-          fake_topics_metadata.stub(:topic).and_return('spec')
-          fake_topics_metadata.stub(:partitions_metadata).and_return([fake_partition_metadata])
-          fake_partition_metadata.stub(:partition_id).and_return(0)
-          fake_partition_metadata.stub(:isr).and_return(['a non-nil value'])
+          allow(fake_topics_metadata).to receive(:topic).and_return('spec')
+          allow(fake_topics_metadata).to receive(:partitions_metadata).and_return([fake_partition_metadata])
+          allow(fake_partition_metadata).to receive(:partition_id).and_return(0)
+          allow(fake_partition_metadata).to receive(:isr).and_return(['a non-nil value'])
         end
 
         it 'returns in sync replicas' do
@@ -110,7 +110,7 @@ module Heller
 
       context 'given a topic-partition combination that does not exist' do
         before do
-          fake_topics_metadata.stub(:topic).and_return('not-spec')
+          allow(fake_topics_metadata).to receive(:topic).and_return('not-spec')
         end
 
         it 'raises NoSuchTopicPartitionCombinationError' do

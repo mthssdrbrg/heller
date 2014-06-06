@@ -13,14 +13,15 @@ module Heller
     end
 
     let :consumer_spy do
-      double(:consumer, fetch: nil)
+      double(:consumer)
     end
 
     before do
-      consumer_impl.stub(:new) do |*args|
-        consumer_spy.stub(:client_id).and_return(args.last)
+      allow(consumer_impl).to receive(:new) do |*args|
+        allow(consumer_spy).to receive(:client_id).and_return(args.last)
         consumer_spy
       end
+      allow(consumer_spy).to receive(:fetch)
     end
 
     describe '#initialize' do
@@ -43,7 +44,7 @@ module Heller
         context 'client_id' do
           it 'makes some kind of attempt to generate a unique client id' do
             consumer = described_class.new('localhost:9092', consumer_impl: consumer_impl)
-            consumer.client_id.should =~ /heller\-consumer\-[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}/
+            expect(consumer.client_id).to match /heller\-consumer\-[a-f0-9]{8}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{4}\-[a-f0-9]{12}/
           end
         end
       end
@@ -83,7 +84,7 @@ module Heller
         it 'includes parameters from given Heller::FetchRequest' do
           expect(consumer_spy).to receive(:fetch) do |request|
             request_info = request.request_info
-            expect(request_info).to have(1).item
+            expect(request_info.size).to eq(1)
 
             tuple = request_info.first
             expect(tuple._1.topic).to eq('spec')
@@ -103,7 +104,7 @@ module Heller
         it 'converts them to a Kafka::Api::FetchRequest' do
           expect(consumer_spy).to receive(:fetch) do |request|
             expect(request).to be_a(Kafka::Api::FetchRequest)
-            expect(request.request_info).to have(3).items
+            expect(request.request_info.size).to eq(3)
           end
 
           requests = 3.times.map { |i| Heller::FetchRequest.new(topic, partition + i, offset) }
@@ -166,7 +167,7 @@ module Heller
 
     describe '#offsets_before' do
       before do
-        consumer_spy.stub(:get_offsets_before)
+        allow(consumer_spy).to receive(:get_offsets_before)
       end
 
       let :topic do
@@ -243,8 +244,8 @@ module Heller
       end
 
       before do
-        consumer_spy.stub(:get_offsets_before).and_return(fake_offset_response)
-        fake_offset_response.stub(:offsets).with('spec', 0).and_return([0, 1, 2])
+        allow(consumer_spy).to receive(:get_offsets_before).and_return(fake_offset_response)
+        allow(fake_offset_response).to receive(:offsets).with('spec', 0).and_return([0, 1, 2])
       end
 
       it 'sends an OffsetRequest with the magic value for \'earliest\' offset' do
@@ -280,8 +281,8 @@ module Heller
       end
 
       before do
-        fake_offset_response.stub(:offsets).with('spec', 0).and_return([0, 1, 2])
-        consumer_spy.stub(:get_offsets_before).and_return(fake_offset_response)
+        allow(fake_offset_response).to receive(:offsets).with('spec', 0).and_return([0, 1, 2])
+        allow(consumer_spy).to receive(:get_offsets_before).and_return(fake_offset_response)
       end
 
       it 'sends an OffsetRequest with the magic value for \'latest\' offset' do
@@ -314,7 +315,7 @@ module Heller
     describe '#metadata' do
       context 'given a list of topics' do
         before do
-          consumer_spy.stub(:send)
+          allow(consumer_spy).to receive(:send)
         end
 
         it 'sends a TopicMetadataRequest' do
@@ -345,7 +346,7 @@ module Heller
 
     context '#disconnect' do
       before do
-        consumer_spy.stub(:close)
+        allow(consumer_spy).to receive(:close)
       end
 
       it 'calls #close on the underlying consumer' do

@@ -40,7 +40,7 @@ module Heller
         message = Heller::Message.new('topic', 'actual message')
 
         expect(producer_spy).to receive(:send) do |msgs|
-          expect(msgs).to have(1).item
+          expect(msgs.size).to eq(1)
           expect(msgs.first).to eq(message)
         end
 

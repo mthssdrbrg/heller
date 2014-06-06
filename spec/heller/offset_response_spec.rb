@@ -13,11 +13,11 @@ module Heller
     end
 
     before do
-      underlying.stub(:has_error?)
+      allow(underlying).to receive(:has_error?)
     end
 
     describe '#error?' do
-      it 'asks proxies the underlying FetchResponse#has_error?' do
+      it 'proxies the underlying FetchResponse#has_error?' do
         response.error?
 
         expect(underlying).to have_received(:has_error?)

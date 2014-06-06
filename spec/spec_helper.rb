@@ -6,6 +6,7 @@ require 'spec/support/fakers'
 RSpec.configure do |config|
   config.include(Fakers)
   config.order = 'random'
+  config.raise_errors_for_deprecations!
 end
 
 require 'coveralls'

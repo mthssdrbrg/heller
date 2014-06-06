@@ -2,6 +2,7 @@
 
 require 'securerandom'
 
+
 module Heller
   class Consumer
     def initialize(connect_string, options = {})

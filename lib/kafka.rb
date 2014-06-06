@@ -34,6 +34,7 @@ module Kafka
   module Consumer
     java_import 'kafka.javaapi.consumer.SimpleConsumer'
     java_import 'kafka.javaapi.consumer.ConsumerConnector'
+    java_import 'kafka.consumer.ConsumerConfig'
   end
 
   module Message

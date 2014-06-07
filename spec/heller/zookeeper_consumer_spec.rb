@@ -20,9 +20,15 @@ module Heller
       double(:consumer_impl)
     end
 
+    let :values do
+      []
+    end
+
     before do
       allow(consumer_impl).to receive(:createJavaConsumerConnector).and_return(consumer_impl)
-      allow(consumer_impl).to receive(:create_message_streams)
+      allow(consumer_impl).to receive(:create_message_streams) do |hash, *args|
+        values.concat(hash.values)
+      end
     end
 
     describe '#initialize' do
@@ -54,15 +60,27 @@ module Heller
         it 'creates message streams with given value decoder' do
           expect(consumer_impl).to have_received(:create_message_streams).with({}, anything, value_decoder)
         end
+
+        it 'converts longs to integers' do
+          values.each do |value|
+            expect(value).to be_a(java.lang.Integer)
+          end
+        end
       end
 
       context 'when not given any options' do
         before do
-          consumer.create_streams({})
+          consumer.create_streams({'topic1' => 2})
         end
 
         it 'creates message streams' do
-          expect(consumer_impl).to have_received(:create_message_streams).with({})
+          expect(consumer_impl).to have_received(:create_message_streams)
+        end
+
+        it 'converts longs to integers' do
+          values.each do |value|
+            expect(value).to be_a(java.lang.Integer)
+          end
         end
       end
     end

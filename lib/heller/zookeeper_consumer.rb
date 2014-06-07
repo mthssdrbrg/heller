@@ -8,9 +8,9 @@ module Heller
 
     def create_streams(topic_count_map, options={})
       if options[:key_decoder] && options[:value_decoder]
-        @consumer.create_message_streams(topic_count_map, *options.values_at(:key_decoder, :value_decoder))
+        @consumer.create_message_streams(convert_longs(topic_count_map), *options.values_at(:key_decoder, :value_decoder))
       else
-        @consumer.create_message_streams(topic_count_map)
+        @consumer.create_message_streams(convert_longs(topic_count_map))
       end
     end
 
@@ -24,6 +24,12 @@ module Heller
     alias_method :shutdown, :close
 
     private
+
+    def convert_longs(hash)
+      hash.each_with_object({}) do |(k, v), acc|
+        acc[k] = v.to_java(:int)
+      end
+    end
 
     def create_consumer(consumer_impl, options)
       consumer_impl.createJavaConsumerConnector(ConsumerConfiguration.new(options).to_java)

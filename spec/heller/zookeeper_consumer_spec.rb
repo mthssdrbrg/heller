@@ -51,15 +51,15 @@ module Heller
         end
 
         before do
-          consumer.create_streams({}, key_decoder: key_decoder, value_decoder: value_decoder)
+          consumer.create_streams({'topic1' => 2}, key_decoder: key_decoder, value_decoder: value_decoder)
         end
 
         it 'creates message streams with given key decoder' do
-          expect(consumer_impl).to have_received(:create_message_streams).with({}, key_decoder, anything)
+          expect(consumer_impl).to have_received(:create_message_streams).with(anything, key_decoder, anything)
         end
 
         it 'creates message streams with given value decoder' do
-          expect(consumer_impl).to have_received(:create_message_streams).with({}, anything, value_decoder)
+          expect(consumer_impl).to have_received(:create_message_streams).with(anything, anything, value_decoder)
         end
 
         it 'converts longs to integers' do

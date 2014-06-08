@@ -29,6 +29,7 @@ module Heller
       allow(consumer_impl).to receive(:create_message_streams) do |hash, *args|
         values.concat(hash.values)
       end
+      allow(consumer_impl).to receive(:create_message_streams_by_filter)
     end
 
     describe '#initialize' do
@@ -81,6 +82,46 @@ module Heller
           values.each do |value|
             expect(value).to be_a(java.lang.Integer)
           end
+        end
+      end
+    end
+
+    describe '#create_streams_by_filter' do
+      let :key_decoder do
+        nil
+      end
+
+      let :value_decoder do
+        nil
+      end
+
+      before do
+        consumer.create_streams_by_filter('hello-world', 1, key_decoder: key_decoder, value_decoder: value_decoder)
+      end
+
+      it 'creates message streams' do
+        expect(consumer_impl).to have_received(:create_message_streams_by_filter)
+      end
+
+      it 'creates a Whitelist object from given filter' do
+        expect(consumer_impl).to have_received(:create_message_streams_by_filter).with(instance_of(Kafka::Consumer::Whitelist), 1)
+      end
+
+      context 'when given :key_decoder and :value_decoder' do
+        let :key_decoder do
+          double(:key_decoder)
+        end
+
+        let :value_decoder do
+          double(:value_decoder)
+        end
+
+        it 'creates message streams with given key decoder' do
+          expect(consumer_impl).to have_received(:create_message_streams_by_filter).with(anything, 1, key_decoder, anything)
+        end
+
+        it 'creates message streams with given value decoder' do
+          expect(consumer_impl).to have_received(:create_message_streams_by_filter).with(anything, 1, anything, value_decoder)
         end
       end
     end

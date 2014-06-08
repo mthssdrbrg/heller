@@ -14,6 +14,15 @@ module Heller
       end
     end
 
+    def create_streams_by_filter(filter, num_streams, options={})
+      whitelist = Kafka::Consumer::Whitelist.new(filter)
+      if options[:key_decoder] && options[:value_decoder]
+        @consumer.create_message_streams_by_filter(whitelist, num_streams, *options.values_at(:key_decoder, :value_decoder)).to_a
+      else
+        @consumer.create_message_streams_by_filter(whitelist, num_streams).to_a
+      end
+    end
+
     def commit
       @consumer.commit_offsets
     end

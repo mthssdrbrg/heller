@@ -14,7 +14,7 @@ module Heller
         consumer_id: 'consumer.id',
         fetch_max_bytes: 'fetch.message.max.bytes',
         fetch_min_bytes: 'fetch.min.bytes',
-        fetch_wait_max: 'fetch.wait.max.ms',
+        fetch_max_wait: 'fetch.wait.max.ms',
         group_id: 'group.id',
         num_fetchers: 'num.consumer.fetchers',
         num_retries: 'rebalance.max.retries',

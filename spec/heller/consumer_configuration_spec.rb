@@ -17,7 +17,7 @@ module Heller
         client_id: 'spec-client-id',
         fetch_max_bytes: 2048,
         fetch_min_bytes: 12345,
-        fetch_wait_max: 54321,
+        fetch_max_wait: 54321,
         group_id: 'spec-group',
         num_fetchers: 10,
         num_retries: 15,

@@ -13,7 +13,7 @@ describe 'End-to-end communication using ZookeeperConsumer' do
       group_id: 'test',
       auto_reset_offset: :smallest,
       timeout: 1000,
-      fetch_wait_max: 1000,
+      fetch_max_wait: 1000,
     })
   end
 

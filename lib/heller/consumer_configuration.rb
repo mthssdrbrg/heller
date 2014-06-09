@@ -18,7 +18,7 @@ module Heller
         group_id: 'group.id',
         num_fetchers: 'num.consumer.fetchers',
         num_retries: 'rebalance.max.retries',
-        queue_max_messages: 'queued.max.message.chunks',
+        max_queued_message_chunks: 'queued.max.message.chunks',
         receive_buffer: 'socket.receive.buffer.bytes',
         retry_backoff: 'rebalance.backoff.ms',
         refresh_leader_backoff: 'refresh.leader.backoff.ms',

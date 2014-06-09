@@ -21,7 +21,7 @@ module Heller
         group_id: 'spec-group',
         num_fetchers: 10,
         num_retries: 15,
-        queue_max_messages: 1500,
+        max_queued_message_chunks: 1500,
         receive_buffer: 4096,
         retry_backoff: 125,
         refresh_leader_backoff: 250,

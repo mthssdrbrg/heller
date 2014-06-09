@@ -12,7 +12,7 @@ module Heller
         auto_reset_offset: 'auto.offset.reset',
         client_id: 'client.id',
         consumer_id: 'consumer.id',
-        fetch_max_bytes: 'fetch.message.max.bytes',
+        fetch_message_max_bytes: 'fetch.message.max.bytes',
         fetch_min_bytes: 'fetch.min.bytes',
         fetch_max_wait: 'fetch.wait.max.ms',
         group_id: 'group.id',

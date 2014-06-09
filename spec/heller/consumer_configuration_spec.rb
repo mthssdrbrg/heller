@@ -15,7 +15,7 @@ module Heller
         auto_commit_interval: 1000,
         auto_reset_offset: :smallest,
         client_id: 'spec-client-id',
-        fetch_max_bytes: 2048,
+        fetch_message_max_bytes: 2048,
         fetch_min_bytes: 12345,
         fetch_max_wait: 54321,
         group_id: 'spec-group',

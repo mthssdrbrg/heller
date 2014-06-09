@@ -2,8 +2,8 @@
 
 module Heller
   class ZookeeperConsumer
-    def initialize(options, consumer_impl=Kafka::Consumer::Consumer)
-      @consumer = create_consumer(consumer_impl, options)
+    def initialize(zk_hosts, options, consumer_impl=Kafka::Consumer::Consumer)
+      @consumer = create_consumer(consumer_impl, options.merge(zk_connect: zk_hosts))
     end
 
     def create_streams(topic_count_map, options={})

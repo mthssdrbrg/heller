@@ -9,8 +9,7 @@ describe 'End-to-end communication using ZookeeperConsumer' do
   end
 
   let :consumer do
-    Heller::ZookeeperConsumer.new({
-      zk_connect: 'localhost:2181',
+    Heller::ZookeeperConsumer.new('localhost:2181', {
       group_id: 'test',
       auto_reset_offset: :smallest,
       timeout: 1000,

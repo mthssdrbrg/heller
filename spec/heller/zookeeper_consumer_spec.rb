@@ -6,12 +6,11 @@ require 'spec_helper'
 module Heller
   describe ZookeeperConsumer do
     let :consumer do
-      described_class.new(options, consumer_impl)
+      described_class.new('localhost:2181', options, consumer_impl)
     end
 
     let :options do
       {
-        zk_connect: 'localhost:2181',
         group_id: 'test',
       }
     end
@@ -34,9 +33,17 @@ module Heller
 
     describe '#initialize' do
       it 'creates a JavaConsumerConnector' do
-        described_class.new(options, consumer_impl)
+        described_class.new('localhost:2181', options, consumer_impl)
 
         expect(consumer_impl).to have_received(:createJavaConsumerConnector)
+      end
+
+      it 'includes ZooKeeper hosts in configuration' do
+        allow(consumer_impl).to receive(:createJavaConsumerConnector) do |config|
+          expect(config.zk_connect).to eq('localhost:2181')
+        end
+
+        described_class.new('localhost:2181', options, consumer_impl)
       end
     end
 

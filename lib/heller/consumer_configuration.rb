@@ -6,7 +6,7 @@ module Heller
     protected
 
     def key_mappings
-      @key_mappings = {
+      @key_mappings ||= {
         auto_commit: 'auto.commit.enable',
         auto_commit_interval: 'auto.commit.interval.ms',
         auto_reset_offset: 'auto.offset.reset',

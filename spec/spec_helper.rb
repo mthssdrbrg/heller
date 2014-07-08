@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require 'bundler/setup'
 require 'json'
 require 'spec/support/fakers'
 

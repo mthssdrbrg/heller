@@ -14,8 +14,11 @@ function start() {
   log_dir=$base_dir/tmp
   config_dir=$base_dir/spec/support/config
   classpath=$(ls -1 $(bundle show scala-library-jars)/lib/*.jar | paste -sd: -)
+  classpath=$classpath:$(ls -1 $(bundle show slyphon-log4j)/lib/*.jar | paste -sd: -)
   classpath=$classpath:$(ls -1 $(bundle show slf4j-jars)/lib/slf4j-{api,simple}-*.jar | paste -sd: -)
   classpath=$classpath:$(ls -1 $(bundle show zookeeper-jars)/lib/*.jar | paste -sd: -)
+  classpath=$classpath:$(ls -1 $(bundle show metrics-core-jars)/lib/*.jar | paste -sd: -)
+  classpath=$classpath:$(ls -1 $(bundle show snappy-jars)/lib/*.jar | paste -sd: -)
   classpath=$classpath:$(ls -1 $(bundle show kafka-jars)/lib/*.jar | paste -sd: -)
   kafka_java_opts="-Xmx512M -server -Dlog4j.configuration=file:$config_dir/log4j.properties -cp $classpath"
 

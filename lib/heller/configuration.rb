@@ -3,11 +3,11 @@
 module Heller
   class Configuration
     def initialize(options={})
-      @configuration = defaults.merge(options)
+      @configuration = merge_with_defaults(options)
     end
 
     def [](key)
-      @configuration[key]
+      @configuration[key.to_sym]
     end
 
     def to_java
@@ -22,9 +22,15 @@ module Heller
 
     private
 
+    def merge_with_defaults(options)
+      options.each_with_object(defaults) do |(k, v), h|
+        h[k.to_sym] = v
+      end
+    end
+
     def to_properties
       @configuration.each_with_object(Properties.new) do |(key, value), props|
-        props.put(key_mappings[key], value.to_s)
+        props.put(key_mappings[key.to_sym], value.to_s)
       end
     end
   end

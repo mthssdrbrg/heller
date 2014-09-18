@@ -34,6 +34,7 @@ module Heller
       request = Kafka::JavaApi::TopicMetadataRequest.new(topics)
       TopicMetadataResponse.new(@consumer.send(request))
     end
+    alias_method :topic_metadata, :metadata
 
     def offsets_before(offset_requests)
       request_info = Array(offset_requests).each_with_object({}) do |request, memo|

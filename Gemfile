@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'kafka-jars', github: 'mthssdrbrg/kafka-jars'
+gemspec
 
 group :test do
   gem 'rspec'

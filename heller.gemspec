@@ -19,4 +19,6 @@ Gem::Specification.new do |s|
   s.require_paths = %w(lib)
 
   s.platform    = 'java'
+
+  s.add_runtime_dependency 'kafka-jars', '= 0.8.1.1.pre0'
 end

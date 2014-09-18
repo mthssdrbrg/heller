@@ -321,6 +321,7 @@ module Heller
         it 'sends a TopicMetadataRequest' do
           consumer.metadata(['topic1', 'topic2'])
           expect(consumer_spy).to have_received(:send) do |request|
+            expect(request).to be_a(Kafka::JavaApi::TopicMetadataRequest)
             expect(request.topics.to_a).to eql(['topic1', 'topic2'])
           end
         end

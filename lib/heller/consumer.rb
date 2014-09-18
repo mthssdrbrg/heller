@@ -9,9 +9,8 @@ module Heller
       @host, @port = connect_string.split(':')
       options   = defaults.merge(options)
       @consumer = create_consumer(options)
-      @builder  = create_builder(options)
+      @build_options = options.select { |k, _| BUILD_OPTIONS.include?(k) }
       @decoder  = Kafka::Serializer::StringDecoder.new(nil)
-      @build_lock = Concurrency::Lock.new
     end
 
     def client_id
@@ -19,15 +18,12 @@ module Heller
     end
 
     def fetch(fetch_requests, fetch_size = DEFAULT_FETCH_SIZE)
-      kafka_fetch_request = @build_lock.lock do
-        Array(fetch_requests).each do |request|
-          @builder.add_fetch(request.topic, request.partition, request.offset, fetch_size)
-        end
-
-        @builder.build
+      builder = create_builder(@build_options)
+      Array(fetch_requests).each do |request|
+        builder.add_fetch(request.topic, request.partition, request.offset, fetch_size)
       end
-
-      FetchResponse.new(@consumer.fetch(kafka_fetch_request), @decoder)
+      raw_response = @consumer.fetch(builder.build)
+      FetchResponse.new(raw_response, @decoder)
     end
 
     def metadata(topics)
@@ -67,6 +63,7 @@ module Heller
     private
 
     DEFAULT_FETCH_SIZE = 1024 * 1024
+    BUILD_OPTIONS = [:client_id, :max_wait, :min_bytes].freeze
 
     def defaults
       {
@@ -89,7 +86,7 @@ module Heller
     def create_builder(options)
       builder = Kafka::Api::FetchRequestBuilder.new
 
-      [:client_id, :max_wait, :min_bytes].each do |symbol|
+      BUILD_OPTIONS.each do |symbol|
         builder.send(symbol, options[symbol]) if options[symbol]
       end
 

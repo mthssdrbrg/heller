@@ -348,6 +348,11 @@ module Heller
           end
         end
       end
+
+      it 'is aliased as #topic_metadata' do
+        consumer.topic_metadata
+        expect(consumer_spy).to have_received(:send).with(an_instance_of(Kafka::JavaApi::TopicMetadataRequest))
+      end
     end
 
     context '#disconnect' do

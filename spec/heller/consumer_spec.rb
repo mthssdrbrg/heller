@@ -313,17 +313,16 @@ module Heller
     end
 
     describe '#metadata' do
+      before do
+        allow(consumer_spy).to receive(:send)
+      end
+
       context 'given a list of topics' do
-        before do
-          allow(consumer_spy).to receive(:send)
-        end
-
         it 'sends a TopicMetadataRequest' do
-          expect(consumer_spy).to receive(:send) do |request|
-            expect(request.topics.to_a).to eq(['topic1', 'topic2'])
-          end
-
           consumer.metadata(['topic1', 'topic2'])
+          expect(consumer_spy).to have_received(:send) do |request|
+            expect(request.topics.to_a).to eql(['topic1', 'topic2'])
+          end
         end
 
         it 'returns a Heller::TopicMetadataResponse' do
@@ -333,21 +332,19 @@ module Heller
 
       context 'given an empty list' do
         it 'sends a TopicMetadataRequest' do
-          expect(consumer_spy).to receive(:send) do |request|
+          consumer.metadata([])
+          expect(consumer_spy).to have_received(:send) do |request|
             expect(request.topics.to_a).to eq([])
           end
-
-          consumer.metadata([])
         end
       end
 
       context 'given no arguments' do
         it 'sends a TopicMetadataRequest with an empty list of topics' do
-          expect(consumer_spy).to receive(:send) do |request|
+          consumer.metadata
+          expect(consumer_spy).to have_received(:send) do |request|
             expect(request.topics.to_a).to eq([])
           end
-
-          consumer.metadata
         end
       end
     end

@@ -332,14 +332,22 @@ module Heller
       end
 
       context 'given an empty list' do
-        it 'does not send any request' do
-          expect(consumer_spy).to_not receive(:send)
+        it 'sends a TopicMetadataRequest' do
+          expect(consumer_spy).to receive(:send) do |request|
+            expect(request.topics.to_a).to eq([])
+          end
 
           consumer.metadata([])
         end
+      end
 
-        it 'returns nil' do
-          expect(consumer.metadata([])).to be_nil
+      context 'given no arguments' do
+        it 'sends a TopicMetadataRequest with an empty list of topics' do
+          expect(consumer_spy).to receive(:send) do |request|
+            expect(request.topics.to_a).to eq([])
+          end
+
+          consumer.metadata
         end
       end
     end

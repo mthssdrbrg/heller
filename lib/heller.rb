@@ -9,23 +9,6 @@ module Heller
   java_import 'java.lang.IllegalArgumentException'
   java_import 'java.util.NoSuchElementException'
 
-  module Concurrency
-    java_import 'java.util.concurrent.locks.ReentrantLock'
-
-    class Lock
-      def initialize
-        @lock = Concurrency::ReentrantLock.new
-      end
-
-      def lock
-        @lock.lock
-        yield
-      ensure
-        @lock.unlock
-      end
-    end
-  end
-
   HellerError = Class.new(StandardError)
   NoSuchTopicPartitionCombinationError = Class.new(HellerError)
 end

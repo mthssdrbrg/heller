@@ -30,12 +30,11 @@ module Heller
       FetchResponse.new(@consumer.fetch(kafka_fetch_request), @decoder)
     end
 
-    def metadata(topics)
-      unless topics.empty?
-        request = Kafka::JavaApi::TopicMetadataRequest.new(topics)
-        TopicMetadataResponse.new(@consumer.send(request))
-      end
+    def metadata(topics=[])
+      request = Kafka::JavaApi::TopicMetadataRequest.new(topics)
+      TopicMetadataResponse.new(@consumer.send(request))
     end
+    alias_method :topic_metadata, :metadata
 
     def offsets_before(offset_requests)
       request_info = Array(offset_requests).each_with_object({}) do |request, memo|

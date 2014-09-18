@@ -313,17 +313,17 @@ module Heller
     end
 
     describe '#metadata' do
+      before do
+        allow(consumer_spy).to receive(:send)
+      end
+
       context 'given a list of topics' do
-        before do
-          allow(consumer_spy).to receive(:send)
-        end
-
         it 'sends a TopicMetadataRequest' do
-          expect(consumer_spy).to receive(:send) do |request|
-            expect(request.topics.to_a).to eq(['topic1', 'topic2'])
-          end
-
           consumer.metadata(['topic1', 'topic2'])
+          expect(consumer_spy).to have_received(:send) do |request|
+            expect(request).to be_a(Kafka::JavaApi::TopicMetadataRequest)
+            expect(request.topics.to_a).to eql(['topic1', 'topic2'])
+          end
         end
 
         it 'returns a Heller::TopicMetadataResponse' do
@@ -332,15 +332,26 @@ module Heller
       end
 
       context 'given an empty list' do
-        it 'does not send any request' do
-          expect(consumer_spy).to_not receive(:send)
-
+        it 'sends a TopicMetadataRequest' do
           consumer.metadata([])
+          expect(consumer_spy).to have_received(:send) do |request|
+            expect(request.topics.to_a).to eq([])
+          end
         end
+      end
 
-        it 'returns nil' do
-          expect(consumer.metadata([])).to be_nil
+      context 'given no arguments' do
+        it 'sends a TopicMetadataRequest with an empty list of topics' do
+          consumer.metadata
+          expect(consumer_spy).to have_received(:send) do |request|
+            expect(request.topics.to_a).to eq([])
+          end
         end
+      end
+
+      it 'is aliased as #topic_metadata' do
+        consumer.topic_metadata
+        expect(consumer_spy).to have_received(:send).with(an_instance_of(Kafka::JavaApi::TopicMetadataRequest))
       end
     end
 

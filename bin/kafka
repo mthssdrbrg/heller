@@ -13,12 +13,13 @@ function start() {
   base_dir=$(dirname $0)/..
   log_dir=$base_dir/tmp
   config_dir=$base_dir/spec/support/config
-  classpath=$(ls -1 $(bundle show scala-library-jars)/lib/*.jar | paste -sd: -)
-  classpath=$classpath:$(ls -1 $(bundle show slf4j-jars)/lib/slf4j-{api,simple}-*.jar | paste -sd: -)
-  classpath=$classpath:$(ls -1 $(bundle show zookeeper-jars)/lib/*.jar | paste -sd: -)
-  classpath=$classpath:$(ls -1 $(bundle show metrics-core-jars)/lib/*.jar | paste -sd: -)
-  classpath=$classpath:$(ls -1 $(bundle show snappy-jars)/lib/*.jar | paste -sd: -)
-  classpath=$classpath:$(ls -1 $(bundle show kafka-jars)/lib/*.jar | paste -sd: -)
+  slf4j_dir=$(find $GEM_HOME -name 'slf4j-jars*' -type d | sort | tail -n 1)
+  classpath=$(find $slf4j_dir -name 'slf4j-api-*.jar' | paste -sd: -)
+  classpath=$classpath:$(find $slf4j_dir -name 'slf4j-simple-*.jar' | paste -sd: -)
+  for gem in scala-library-jars zookeeper-jars metrics-core-jars snappy-jars lz4-jars kafka-clients-jars kafka-jars; do
+    gem_dir=$(find $GEM_HOME -name $gem'*' -type d | sort | tail -n 1)
+    classpath=$classpath:$(find $gem_dir -name '*.jar' | paste -sd: -)
+  done
   kafka_java_opts="-Xmx512M -server -Dlog4j.configuration=file:$config_dir/log4j.properties -cp $classpath"
 
   mkdir -p $log_dir
@@ -37,8 +38,8 @@ function start() {
 }
 
 function stop() {
-  kill $(jps -m | grep Kafka | cut -d ' ' -f 1) > /dev/null 2>&1
-  kill $(jps -m | grep zookeeper | cut -d ' ' -f 1) > /dev/null 2>&1
+  kill -9 $(jps -m | grep Kafka | cut -d ' ' -f 1) > /dev/null 2>&1
+  kill -9 $(jps -m | grep zookeeper | cut -d ' ' -f 1) > /dev/null 2>&1
 }
 
 RETVAL=0

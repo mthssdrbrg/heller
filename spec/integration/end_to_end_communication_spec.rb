@@ -5,11 +5,20 @@ require 'spec_helper'
 
 describe 'End-to-end communication' do
   let :producer do
-    Heller::Producer.new('localhost:9092', client_id: 'spec-producer', batch_size: 1, num_retries: 10, retry_backoff: 1000)
+    Heller::Producer.new('localhost:9092', producer_options)
   end
 
   let :consumer do
     Heller::Consumer.new('localhost:9092', client_id: 'spec-consumer')
+  end
+
+  let :producer_options do
+    {
+      client_id: 'spec-producer',
+      batch_size: 1,
+      num_retries: 10,
+      retry_backoff: 1000,
+    }
   end
 
   after do
@@ -88,6 +97,57 @@ describe 'End-to-end communication' do
           offset, message = messages.last
           expect(offset).to be_zero
           expect(JSON.parse(message)).to eq({'a key' => 'a value'})
+        end
+      end
+
+      context 'with Snappy compression' do
+        let :producer_options do
+          super.merge({
+            client_id: 'spec-producer-snappy',
+            compression: :snappy,
+          })
+        end
+
+        context 'simple string messages' do
+          let :topic do
+            "spec-snappy-simple-string-#{Time.now.to_i.to_s(36)}"
+          end
+
+          before do
+            producer.push(Heller::Message.new(topic, 'simple string message'))
+          end
+
+          it 'is no big deal' do
+            expect(enumerator).to be_a(Heller::MessageSetEnumerator)
+
+            messages = enumerator.to_a
+            expect(messages.size).to eq(1)
+
+            offset, message = messages.last
+            expect(offset).to be_zero
+            expect(message).to eq('simple string message')
+          end
+        end
+
+        context 'JSON serialized hashes' do
+          let :topic do
+            "spec-snappy-json-hash-#{Time.now.to_i.to_s(36)}"
+          end
+
+          before do
+            producer.push(Heller::Message.new(topic, {'a key' => 'a value'}.to_json))
+          end
+
+          it 'is no big deal' do
+            expect(enumerator).to be_a(Heller::MessageSetEnumerator)
+
+            messages = enumerator.to_a
+            expect(messages.size).to eq(1)
+
+            offset, message = messages.last
+            expect(offset).to be_zero
+            expect(JSON.parse(message)).to eq({'a key' => 'a value'})
+          end
         end
       end
     end

@@ -1,5 +1,6 @@
 language: ruby
-script: bundle exec rspec
+sudo: false
+cache: bundler
 before_script:
   - ./bin/kafka start || true
   - 'tail -n +1 tmp/*.log'
@@ -7,3 +8,4 @@ rvm:
   - jruby
 jdk:
   - openjdk7
+script: bundle exec rspec

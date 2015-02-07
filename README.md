@@ -179,7 +179,7 @@ sparse at times.
 
 ## Copyright
 
-Copyright 2013-2014 Mathias Söderberg and contributors
+Copyright 2013-2015 Mathias Söderberg and contributors
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the

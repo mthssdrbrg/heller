@@ -6,6 +6,10 @@ before_script:
   - tail -n +1 tmp/*.log
 rvm:
   - jruby
+  - jruby-head
 jdk:
   - openjdk7
 script: bundle exec rspec
+matrix:
+  allow_failure:
+    - rvm: jruby-head

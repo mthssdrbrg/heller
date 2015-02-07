@@ -28,9 +28,13 @@ module Heller
       end
     end
 
+    def convert_key(key)
+      key_mappings.key?(key) ? key_mappings[key] : key.to_s.gsub('_', '.')
+    end
+
     def to_properties
       @configuration.each_with_object(Properties.new) do |(key, value), props|
-        props.put(key_mappings[key.to_sym], value.to_s)
+        props.put(convert_key(key), value.to_s)
       end
     end
   end

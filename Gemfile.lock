@@ -20,12 +20,12 @@ GEM
     http-cookie (1.0.2)
       domain_name (~> 0.5)
     json (1.8.2-java)
-    kafka-clients-jars (0.8.2.1.pre0-java)
+    kafka-clients-jars (0.8.2.1-java)
       lz4-jars (~> 1.2)
       metrics-core-jars (>= 2.1, < 3.0.0)
       slf4j-jars (~> 1.7)
       snappy-jars (~> 1.1)
-    kafka-jars (0.8.2.1.pre0-java)
+    kafka-jars (0.8.2.1-java)
       kafka-clients-jars (~> 0.8)
       lz4-jars (~> 1.2)
       metrics-core-jars (>= 2.1, < 3.0.0)
@@ -75,6 +75,5 @@ PLATFORMS
 DEPENDENCIES
   coveralls
   heller!
-  kafka-jars (= 0.8.2.1.pre0)
   rspec
   simplecov

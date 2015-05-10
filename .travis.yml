@@ -1,6 +1,8 @@
 language: ruby
 sudo: false
 cache: bundler
+env:
+  - JRUBY_OPTS="$JRUBY_OPTS -Xcli.debug=true --debug"
 before_script:
   - ./bin/kafka start || true
   - tail -n +1 tmp/*.log

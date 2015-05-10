@@ -90,6 +90,34 @@ module Heller
         it 'sets #zk_sync_time_ms' do
           expect(configuration.zk_sync_time_ms).to eq(100)
         end
+
+        it 'sets #partition_assignment_strategy' do
+          expect(configuration.partition_assignment_strategy).to eq('range')
+        end
+
+        it 'sets #offsets_storage' do
+          expect(configuration.offsets_storage).to eq('kafka')
+        end
+
+        it 'sets #offsets_channel_backoff_ms' do
+          expect(configuration.offsets_channel_backoff_ms).to eq(1000)
+        end
+
+        it 'sets #offsets_channel_socket_timeout_ms' do
+          expect(configuration.offsets_channel_socket_timeout_ms).to eq(1500)
+        end
+
+        it 'sets #offsets_commit_max_retries' do
+          expect(configuration.offsets_commit_max_retries).to eq(15)
+        end
+
+        it 'sets #dual_commit_enabled' do
+          expect(configuration.dual_commit_enabled).to be true
+        end
+
+        it 'sets #exclude_internal_topics' do
+          expect(configuration.exclude_internal_topics).to be false
+        end
       end
 
       context 'with Symbol keys' do
@@ -115,6 +143,13 @@ module Heller
             zk_session_timeout: 125,
             zk_connection_timeout: 150,
             zk_sync_time: 100,
+            partition_assignment_strategy: 'range',
+            offsets_storage: 'kafka',
+            offsets_channel_backoff_ms: 1000,
+            offsets_channel_socket_timeout_ms: 1500,
+            offsets_commit_max_retries: 15,
+            dual_commit_enabled: true,
+            exclude_internal_topics: false,
           }
         end
 
@@ -144,6 +179,13 @@ module Heller
             'zk_session_timeout' => 125,
             'zk_connection_timeout' => 150,
             'zk_sync_time' => 100,
+            'partition_assignment_strategy' => 'range',
+            'offsets_storage' => 'kafka',
+            'offsets_channel_backoff_ms' => 1000,
+            'offsets_channel_socket_timeout_ms' => 1500,
+            'offsets_commit_max_retries' => 15,
+            'dual_commit_enabled' => true,
+            'exclude_internal_topics' => false,
           }
         end
 

@@ -4,8 +4,7 @@ cache: bundler
 env:
   - JRUBY_OPTS="$JRUBY_OPTS -Xcli.debug=true --debug"
 before_script:
-  - ./bin/kafka start || true
-  - tail -n +1 tmp/*.log
+  - ./bin/kafka start
 rvm:
   - jruby
   - jruby-head
@@ -15,3 +14,5 @@ script: bundle exec rspec
 matrix:
   allow_failure:
     - rvm: jruby-head
+after_failure:
+  - cat tmp/*.log

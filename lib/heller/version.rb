@@ -1,5 +1,5 @@
 # encoding: utf-8
 
 module Heller
-  VERSION = '0.1.0'.freeze
+  VERSION = '0.2.0'.freeze
 end

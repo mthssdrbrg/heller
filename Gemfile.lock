@@ -1,8 +1,8 @@
 PATH
   remote: .
   specs:
-    heller (0.1.0-java)
-      kafka-jars
+    heller (0.2.0-java)
+      kafka-jars (~> 0.8.2)
 
 GEM
   remote: https://rubygems.org/

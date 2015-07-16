@@ -42,6 +42,16 @@ module Kafka
     java_import 'kafka.javaapi.message.ByteBufferMessageSet'
   end
 
+  module Metrics
+    java_import 'kafka.metrics.KafkaMetricsGroup'
+
+    module KafkaMetricsGroup
+      def self.remove_all_consumer_metrics(client_id)
+        self.removeAllConsumerMetrics(client_id)
+      end
+    end
+  end
+
   module Producer
     java_import 'kafka.javaapi.producer.Producer'
     java_import 'kafka.producer.ProducerConfig'

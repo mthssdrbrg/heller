@@ -56,6 +56,8 @@ module Heller
 
     def disconnect
       @consumer.close
+      Kafka::Metrics::KafkaMetricsGroup.remove_all_consumer_metrics(client_id)
+      nil
     end
     alias_method :close, :disconnect
 

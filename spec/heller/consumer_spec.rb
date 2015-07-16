@@ -366,10 +366,28 @@ module Heller
         expect(consumer_spy).to have_received(:close)
       end
 
+      it 'removes any metrics associated with the underlying consumer' do
+        consumer = described_class.new('localhost:9092', client_id: 'metrics-removal')
+        before = Java::ComYammerMetrics::Metrics.default_registry.all_metrics
+        expect(before).to_not be_empty
+        consumer.close
+        after = Java::ComYammerMetrics::Metrics.default_registry.all_metrics
+        expect(after).to be_empty
+      end
+
       it 'is aliased to #close' do
         consumer.close
 
         expect(consumer_spy).to have_received(:close)
+      end
+
+      it 'returns nil' do
+        expect(consumer.close).to be_nil
+      end
+
+      it 'is okay to call multiple times' do
+        consumer = described_class.new('localhost:9092', client_id: 'close-multiple')
+        3.times { consumer.close }
       end
     end
   end

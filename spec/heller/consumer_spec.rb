@@ -368,10 +368,12 @@ module Heller
 
       it 'removes any metrics associated with the underlying consumer' do
         consumer = described_class.new('localhost:9092', client_id: 'metrics-removal')
-        before = Java::ComYammerMetrics::Metrics.default_registry.all_metrics
+        before = Java::ComYammerMetrics::Metrics.default_registry.all_metrics.keys
+        before.select! { |mn| mn.mbean_name.match(/.*clientId=metrics-removal.*/) }
         expect(before).to_not be_empty
         consumer.close
-        after = Java::ComYammerMetrics::Metrics.default_registry.all_metrics
+        after = Java::ComYammerMetrics::Metrics.default_registry.all_metrics.keys
+        after.select! { |mn| mn.mbean_name.match(/.*clientId=metrics-removal.*/) }
         expect(after).to be_empty
       end
 

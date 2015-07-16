@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/mthssdrbrg/heller.svg?branch=master)](https://travis-ci.org/mthssdrbrg/heller)
 [![Coverage Status](https://coveralls.io/repos/mthssdrbrg/heller/badge.svg?branch=master)](https://coveralls.io/r/mthssdrbrg/heller?branch=master)
+[![Gem Version](https://badge.fury.io/rb/heller.svg)](http://badge.fury.io/rb/heller)
 
 Heller is a JRuby wrapper around the Kafka Producer and (Simple)Consumer
 APIs, much like [Mikka](https://github.com/iconara/mikka) is for Akka's Java API.

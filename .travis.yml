@@ -6,13 +6,10 @@ env:
 before_script:
   - ./bin/kafka start
 rvm:
-  - jruby
-  - jruby-head
+  - jruby-1.7
+  - jruby-9.0.0.0
 jdk:
   - openjdk7
 script: bundle exec rspec
-matrix:
-  allow_failure:
-    - rvm: jruby-head
 after_failure:
   - cat tmp/*.log

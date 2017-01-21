@@ -1,8 +1,13 @@
 # Heller
 
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 [![Build Status](https://travis-ci.org/mthssdrbrg/heller.svg?branch=master)](https://travis-ci.org/mthssdrbrg/heller)
 [![Coverage Status](https://coveralls.io/repos/mthssdrbrg/heller/badge.svg?branch=master)](https://coveralls.io/r/mthssdrbrg/heller?branch=master)
 [![Gem Version](https://badge.fury.io/rb/heller.svg)](http://badge.fury.io/rb/heller)
+
+As indicated by the badge above this project is no longer maintained at all. I highly suggest that you use one of the other Kafka gems that are available, and in case you're explicitly looking for a JRuby gem I recommend [burtcorp/kafka-clients-jruby](https://github.com/burtcorp/kafka-clients-jruby).
+
+---
 
 Heller is a JRuby wrapper around the Kafka Producer and (Simple)Consumer
 APIs, much like [Mikka](https://github.com/iconara/mikka) is for Akka's Java API.
